@@ -1,0 +1,80 @@
+@startuml
+
+'left to right direction
+top to bottom direction
+
+skinparam linetype polyline
+'skinparam linetype ortho
+
+class Planet {
+    apparent_heliocentric_position(epoch)
+    geocentric_position(epoch)
+    orbital_elements_j2000(epoch)
+    orbital_elements_mean_equinox(epoch)
+    geometric_heliocentric_position(epoch, tofk5)
+    passage_nodes(epoch, ascending)
+    perihelion_aphelion(epoch, perihelion)
+    station_longitude_1(epoch)
+    station_longitude_2(epoch)
+}
+
+class InnerPlanet {
+	superior_conjunction(epoch)
+	inferior_conjunction(epoch)
+	western_elongation(epoch)
+	eastern_elongation(epoch)
+}
+
+class OuterPlanet {
+	conjunction(epoch)
+	opposition(epoch)
+}
+
+
+class Earth {
+}
+
+class Mercury {
+}
+
+class Venus {
+	illuminated_fraction(epoch)
+}
+
+class Mars {
+}
+
+class Jupiter {
+}
+
+class Saturn {
+}
+
+class Uranus {
+}
+
+class Neptune {
+}
+
+class Pluto {
+}
+
+class Minor{
+}
+
+InnerPlanet --|> Planet
+OuterPlanet --|> Planet
+Mercury --|> InnerPlanet
+Venus --|> InnerPlanet
+Mars --|> OuterPlanet
+Minor -[hidden]|> OuterPlanet
+Jupiter --|> OuterPlanet
+Saturn --|> OuterPlanet
+Uranus -[hidden]|> OuterPlanet
+Neptune -[hidden]|> OuterPlanet
+Pluto -[hidden]|> OuterPlanet
+Earth -[hidden]|> InnerPlanet
+Earth -[hidden]|> OuterPlanet
+
+
+@enduml
