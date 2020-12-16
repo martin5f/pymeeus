@@ -17,17 +17,12 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 from abc import ABC, abstractmethod
-from math import sin, cos, tan, acos, atan2, sqrt, radians
 
-from pymeeus.Angle import Angle
-from pymeeus.Coordinates import (
+from pymeeus_oo.calculation.Coordinates import (
     geometric_vsop_pos, apparent_vsop_pos, orbital_elements,
-    nutation_longitude, true_obliquity, ecliptical2equatorial,
     passage_nodes_elliptic
 )
-from pymeeus.Earth import Earth
-from pymeeus.Epoch import Epoch, JDE2000
-from pymeeus.Sun import Sun
+from pymeeus_oo.calculation.Epoch import Epoch
 
 """
 .. module:: Mars
@@ -43,9 +38,8 @@ class Planet(ABC):
     (Abstract) base class for planets.
     """
 
-    def __init__(self, epoch, tofk5, VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000):
-        self.epoch = epoch
-        self.tofk5 = tofk5
+    def __init__(self, epoch: Epoch, VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000):
+        self.epoch: Epoch = epoch
         self.VSOP87_L = VSOP87_L
         self.VSOP87_B = VSOP87_B
         self.VSOP87_R = VSOP87_R
@@ -53,7 +47,10 @@ class Planet(ABC):
         self.ORBITAL_ELEM_J2000 = ORBITAL_ELEM_J2000
         super().__init__()
 
-    def geometric_heliocentric_position(self, epoch, tofk5=True):
+    def set_epoch(self, epoch: Epoch):
+        self.epoch = epoch
+
+    def geometric_heliocentric_position(self, tofk5=True):
         """This method computes the geometric heliocentric position of planet
         Mars for a given epoch, using the VSOP87 theory.
 
@@ -69,9 +66,9 @@ class Planet(ABC):
         :rtype: tuple
         :raises: TypeError if input values are of wrong type.
         """
-        return geometric_vsop_pos(self.epoch, self.VSOP87_L, self.VSOP87_B, self.VSOP87_R, self.tofk5)
+        return geometric_vsop_pos(self.epoch, self.VSOP87_L, self.VSOP87_B, self.VSOP87_R, tofk5)
 
-    def apparent_heliocentric_position(self, epoch):
+    def apparent_heliocentric_position(self, nutation=True):
         """This method computes the apparent heliocentric position of planet
         Mars for a given epoch, using the VSOP87 theory.
 
@@ -85,9 +82,19 @@ class Planet(ABC):
         :raises: TypeError if input values are of wrong type.
         """
 
-        return apparent_vsop_pos(self.epoch, self.VSOP87_L, self.VSOP87_B, self.VSOP87_R)
+        return apparent_vsop_pos(self.epoch, self.VSOP87_L, self.VSOP87_B, self.VSOP87_R, nutation)
 
-    def orbital_elements_mean_equinox(self, epoch):
+    def apparent_planetcentric_sun_position(self, nutation=True):
+        """For Planet Earth, this method returns Sun's apparent geocentric position.
+        Basically a simple transformation!
+        """
+        lon, lat, r = self.apparent_heliocentric_position(nutation)
+        # lon, lat, r = Earth.apparent_heliocentric_position(epoch, nutation)
+        lon = lon.to_positive() + 180.0
+        lat = -lat
+        return lon, lat, r
+
+    def orbital_elements_mean_equinox(self):
         """This method computes the orbital elements of Mars for the mean
         equinox of the date for a given epoch.
 
@@ -107,7 +114,7 @@ class Planet(ABC):
 
         return orbital_elements(self.epoch, self.ORBITAL_ELEM, self.ORBITAL_ELEM)
 
-    def orbital_elements_j2000(self, epoch):
+    def orbital_elements_j2000(self):
         """This method computes the orbital elements of Mars for the
         standard equinox J2000.0 for a given epoch.
 
@@ -127,92 +134,8 @@ class Planet(ABC):
 
         return orbital_elements(self.epoch, self.ORBITAL_ELEM, self.ORBITAL_ELEM_J2000)
 
-    def geocentric_position(self, epoch):
-        """This method computes the geocentric position of Mars (right
-        ascension and declination) for the given epoch, as well as the
-        elongation angle.
-
-        :param epoch_corrected: Epoch to compute geocentric position, as an Epoch object
-        :type epoch_corrected: :py:class:`Epoch`
-
-        :returns: A tuple containing the right ascension, the declination and
-            the elongation angle as Angle objects
-        :rtype: tuple
-        :raises: TypeError if input value is of wrong type.
-        """
-
-        # Compute the heliocentric position of Mars
-        l, b, r = self.geometric_heliocentric_position(self.epoch, tofk5=False)
-        # Compute the heliocentric position of the Earth
-        l0, b0, r0 = Earth.geometric_heliocentric_position(self.epoch, tofk5=False)
-        # Convert to radians
-        lr = l.rad()
-        br = b.rad()
-        l0r = l0.rad()
-        b0r = b0.rad()
-        # Compute first iteration
-        x = r * cos(br) * cos(lr) - r0 * cos(b0r) * cos(l0r)
-        y = r * cos(br) * sin(lr) - r0 * cos(b0r) * sin(l0r)
-        z = r * sin(br) - r0 * sin(b0r)
-        delta = sqrt(x * x + y * y + z * z)
-        tau = 0.0057755183 * delta
-        # Adjust the epoch for light-time
-        # OLD: epoch -= tau
-        epoch_corrected = self.epoch - tau
-        # Compute again Mars coordinates with this correction
-        # TODO: increase precision by more iterations (see JupiterMoons)
-        l, b, r = self.geometric_heliocentric_position(epoch_corrected, tofk5=False)
-        # Compute second iteration
-        lr = l.rad()
-        br = b.rad()
-        x = r * cos(br) * cos(lr) - r0 * cos(b0r) * cos(l0r)
-        y = r * cos(br) * sin(lr) - r0 * cos(b0r) * sin(l0r)
-        z = r * sin(br) - r0 * sin(b0r)
-        # Compute longitude and latitude
-        lamb = atan2(y, x)
-        beta = atan2(z, sqrt(x * x + y * y))
-        # Now, let's compute the aberration effect
-        t = (epoch_corrected - JDE2000) / 36525
-        e = 0.016708634 + t * (-0.000042037 - t * 0.0000001267)
-        pie = 102.93735 + t * (1.71946 + t * 0.00046)
-        pie = radians(pie)
-        lon = l0 + 180.0
-        lon = lon.rad()
-        k = 20.49552  # The constant of aberration
-        deltal1 = k * (-cos(lon - lamb) + e * cos(pie - lamb)) / cos(beta)
-        deltab1 = -k * sin(beta) * (sin(lon - lamb) - e * sin(pie - lamb))
-        deltal1 = Angle(0, 0, deltal1)
-        deltab1 = Angle(0, 0, deltab1)
-        # Correction to FK5 system
-        lamb = Angle(lamb, radians=True)
-        lamb = lamb.to_positive()
-        beta = Angle(beta, radians=True)
-        l_prime = lamb - t * (1.397 + t * 0.00031)
-        deltal2 = Angle(0, 0, -0.09033)
-        a = 0.03916 * (cos(l_prime.rad()) + sin(l_prime.rad()))
-        a = a * tan(b.rad())
-        deltal2 += Angle(0, 0, a)
-        deltab2 = 0.03916 * (cos(l_prime.rad()) - sin(l_prime.rad()))
-        deltab2 = Angle(0, 0, deltab2)
-        # Apply the corrections
-        lamb = lamb + deltal1 + deltal2
-        beta = beta + deltab1 + deltab2
-        # Correction for nutation
-        dpsi = nutation_longitude(epoch_corrected)
-        lamb += dpsi
-        e = true_obliquity(epoch_corrected)
-        ra, dec = ecliptical2equatorial(lamb, beta, e)
-        # Let's compute the elongation angle
-        lons, lats, rs = Sun.apparent_geocentric_position(epoch_corrected)
-        lambr = lamb.rad()
-        lsr = lons.rad()
-        betar = beta.rad()
-        elon = acos(cos(betar) * cos(lambr - lsr))
-        elon = Angle(elon, radians=True)
-        return ra, dec, elon
-
-    @abstractmethod
-    def perihelion_aphelion(self, epoch, perihelion=True):
+    @staticmethod
+    def perihelion(epoch) -> Epoch:
         """This method computes the time of Perihelion (or Aphelion) closer to
         a given epoch.
 
@@ -228,7 +151,24 @@ class Planet(ABC):
         """
         pass
 
-    def passage_nodes(self, epoch, ascending=True):
+    @staticmethod
+    def aphelion(epoch) -> Epoch:
+        """This method computes the time of Perihelion (or Aphelion) closer to
+        a given epoch.
+
+        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
+        :type epoch: :py:class:`Epoch`
+        :param peihelion: If True, the epoch of the closest Perihelion is
+            computed, if False, the epoch of the closest Aphelion is found.
+        :type bool:
+
+        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :rtype: :py:class:`Epoch`
+        :raises: TypeError if input values are of wrong type.
+        """
+        pass
+
+    def passage_nodes(self, ascending=True) -> (Epoch, float):
         """This function computes the time of passage by the nodes (ascending
         or descending) of Mars, nearest to the given epoch.
 
@@ -246,9 +186,9 @@ class Planet(ABC):
         """
 
         # Get the orbital parameters
-        l, a, e, i, ome, arg = self.orbital_elements_mean_equinox(self.epoch)
+        l, a, e, i, ome, arg = self.orbital_elements_mean_equinox()
         # Compute the time of passage through perihelion
-        t = self.perihelion_aphelion(self.epoch)
+        t = self.perihelion(self.epoch)
         # Get the time of passage through the node
         time, r = passage_nodes_elliptic(arg, e, a, t, ascending)
         return time, r
