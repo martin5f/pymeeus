@@ -16,7 +16,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-from abc import ABC, abstractmethod
+from abc import ABC
 
 from pymeeus_oo.calculation.Coordinates import (
     geometric_vsop_pos, apparent_vsop_pos, orbital_elements,

@@ -46,7 +46,7 @@ class Mars(Planet):
         super().__init__(epoch, VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000)
 
     @staticmethod
-    def conjunction(epoch) -> Epoch:
+    def conjunction(epoch: Epoch) -> Epoch:
         """This method computes the time of the conjunction closest to the
         given epoch.
 
@@ -99,7 +99,7 @@ class Mars(Planet):
         return Epoch(to_return)
 
     @staticmethod
-    def opposition(epoch) -> Epoch:
+    def opposition(epoch: Epoch) -> Epoch:
         """This method computes the time of the opposition closest to the given
         epoch.
 
@@ -152,7 +152,7 @@ class Mars(Planet):
         return Epoch(to_return)
 
     @staticmethod
-    def station_longitude_1(epoch) -> Epoch:
+    def station_longitude_1(epoch: Epoch) -> Epoch:
         """This method computes the time of the 1st station in longitude
         (i.e. when the planet is stationary and begins to move westward -
         retrograde - among the starts) closest to the given epoch.
@@ -196,7 +196,7 @@ class Mars(Planet):
         return Epoch(to_return)
 
     @staticmethod
-    def station_longitude_2(epoch) -> Epoch:
+    def station_longitude_2(epoch: Epoch) -> Epoch:
         """This method computes the time of the 2nd station in longitude
         (i.e. when the planet is stationary and begins to move eastward -
         prograde - among the starts) closest to the given epoch.
@@ -240,7 +240,7 @@ class Mars(Planet):
         return Epoch(to_return)
 
     @staticmethod
-    def perihelion(epoch) -> Epoch:
+    def perihelion(epoch: Epoch) -> Epoch:
         """This method computes the time of Perihelion (or Aphelion) closer to
         a given epoch.
 
@@ -264,7 +264,7 @@ class Mars(Planet):
         return Epoch(sol)
 
     @staticmethod
-    def aphelion(epoch) -> Epoch:
+    def aphelion(epoch: Epoch) -> Epoch:
         """This method computes the time of Perihelion (or Aphelion) closer to
         a given epoch.
 
