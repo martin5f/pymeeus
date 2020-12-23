@@ -20,15 +20,10 @@
 
 from math import sin, cos, log10
 
-from pymeeus_oo.calculation.Angle import Angle
-from pymeeus_oo.calculation.Coordinates import (
-    passage_nodes_elliptic
-)
-from pymeeus_oo.calculation.Epoch import Epoch
-from pymeeus_oo.calculation.Interpolation import Interpolation
-from pymeeus_oo.parameters.Mercury_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
-from pymeeus_oo.parameters.Venus_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
-from pymeeus_oo.planets.Planet import Planet
+from pymeeus_oo.calculation.angle import Angle
+from pymeeus_oo.calculation.epoch import Epoch
+from pymeeus_oo.parameters.mercury_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
+from pymeeus_oo.planets.planet import Planet
 
 """
 .. module:: Mercury
@@ -47,8 +42,7 @@ class Mercury(Planet):
     def __init__(self, epoch):
         super().__init__(epoch, VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000)
 
-    @staticmethod
-    def inferior_conjunction(epoch: Epoch) -> Epoch:
+    def inferior_conjunction(self) -> Epoch:
         """This method computes the time of the inferior conjunction closest to
         the given epoch.
 
@@ -80,11 +74,8 @@ class Mercury(Planet):
         7.306
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mercury's inferior conjunction
@@ -112,8 +103,7 @@ class Mercury(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def superior_conjunction(epoch: Epoch) -> Epoch:
+    def superior_conjunction(self) -> Epoch:
         """This method computes the time of the superior conjunction closest to
         the given epoch.
 
@@ -136,11 +126,8 @@ class Mercury(Planet):
         29.3301
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mercury's superior conjunction
@@ -168,8 +155,7 @@ class Mercury(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def western_elongation(epoch: Epoch) -> Epoch:
+    def western_elongation(self) -> Epoch:
         """This method computes the time of the western elongation closest to
         the given epoch, as well as the corresponding maximum elongation angle.
 
@@ -195,11 +181,8 @@ class Mercury(Planet):
         19.7506
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mercury's inferior conjunction
@@ -239,8 +222,7 @@ class Mercury(Planet):
         to_return = jde0 + corr
         return Epoch(to_return), elon
 
-    @staticmethod
-    def eastern_elongation(epoch: Epoch) -> Epoch:
+    def eastern_elongation(self) -> Epoch:
         """This method computes the time of the eastern elongation closest to
         the given epoch, as well as the corresponding maximum elongation angle.
 
@@ -266,11 +248,8 @@ class Mercury(Planet):
         27.4201
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mercury's inferior conjunction
@@ -310,8 +289,7 @@ class Mercury(Planet):
         to_return = jde0 + corr
         return Epoch(to_return), elon
 
-    @staticmethod
-    def station_longitude_1(epoch: Epoch) -> Epoch:
+    def station_longitude_1(self) -> Epoch:
         """This method computes the time of the 1st station in longitude
         (i.e. when the planet is stationary and begins to move westward -
         retrograde - among the starts) closest to the given epoch.
@@ -335,11 +313,8 @@ class Mercury(Planet):
         25.9358
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mercury's inferior conjunction
@@ -367,8 +342,7 @@ class Mercury(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def station_longitude_2(epoch: Epoch) -> Epoch:
+    def station_longitude_2(self) -> Epoch:
         """This method computes the time of the 2nd station in longitude
         (i.e. when the planet is stationary and begins to move eastward -
         prograde - among the starts) closest to the given epoch.
@@ -392,11 +366,8 @@ class Mercury(Planet):
         15.0724
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mercury's inferior conjunction
@@ -424,8 +395,7 @@ class Mercury(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def perihelion_aphelion(epoch: Epoch, perihelion=True) -> Epoch:
+    def aphelion(self) -> Epoch:
         """This method computes the time of Perihelion (or Aphelion) closer to
         a given epoch.
 
@@ -463,69 +433,61 @@ class Mercury(Planet):
         17
         """
 
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input value")
         # First approximation
-        k = 4.15201 * (epoch.year() - 2000.12)
-        if perihelion:
-            k = round(k)
-        else:
-            k = round(k + 0.5) - 0.5
+        k = 4.15201 * (self.epoch.year() - 2000.12)
+        k = round(k + 0.5) - 0.5
         jde = 2451590.257 + k * 87.96934963
         # Compute the epochs half a day before and after
-        jde_before = jde - 0.5
-        jde_after = jde + 0.5
-        # Compute the Sun-Mercury distance for each epoch
-        l, b, r_b = Mercury.geometric_heliocentric_position(Epoch(jde_before))
-        l, b, r = Mercury.geometric_heliocentric_position(Epoch(jde))
-        l, b, r_a = Mercury.geometric_heliocentric_position(Epoch(jde_after))
-        # Call an interpolation object
-        m = Interpolation([jde_before, jde, jde_after], [r_b, r, r_a])
-        sol = m.minmax()
+        sol = self._interpolate_jde(jde, 0.5)
         return Epoch(sol)
 
-    @staticmethod
-    def passage_nodes(epoch: Epoch, ascending=True) -> (Epoch, float):
-        """This function computes the time of passage by the nodes (ascending
-        or descending) of Mercury, nearest to the given epoch.
+    def perihelion(self) -> Epoch:
+        """This method computes the time of Perihelion (or Aphelion) closer to
+        a given epoch.
 
-        :param epoch: Epoch closest to the node passage
+        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
         :type epoch: :py:class:`Epoch`
-        :param ascending: Whether the time of passage by the ascending (True)
-            or descending (False) node will be computed
-        :type ascending: bool
+        :param peihelion: If True, the epoch of the closest Perihelion is
+            computed, if False, the epoch of the closest Aphelion is found.
+        :type bool:
 
-        :returns: Tuple containing:
-            - Time of passage through the node (:py:class:`Epoch`)
-            - Radius vector when passing through the node (in AU, float)
-        :rtype: tuple
+        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :rtype: :py:class:`Epoch`
         :raises: TypeError if input values are of wrong type.
 
-        >>> epoch = Epoch(2019, 1, 1)
-        >>> time, r = Mercury.passage_nodes(epoch)
-        >>> year, month, day = time.get_date()
-        >>> print(year)
-        2018
-        >>> print(month)
-        11
-        >>> print(round(day, 1))
-        24.7
-        >>> print(round(r, 4))
-        0.3143
+        >>> epoch = Epoch(2000, 1, 1.0)
+        >>> e = Mercury.perihelion_aphelion(epoch)
+        >>> y, m, d, h, mi, s = e.get_full_date()
+        >>> print(y)
+        2000
+        >>> print(m)
+        2
+        >>> print(d)
+        15
+        >>> print(h)
+        18
+        >>> epoch = Epoch(2000, 3, 1.0)
+        >>> e = Mercury.perihelion_aphelion(epoch, perihelion=False)
+        >>> y, m, d, h, mi, s = e.get_full_date()
+        >>> print(y)
+        2000
+        >>> print(m)
+        3
+        >>> print(d)
+        30
+        >>> print(h)
+        17
         """
 
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input types")
-        # Get the orbital parameters
-        l, a, e, i, ome, arg = Mercury.orbital_elements_mean_equinox(epoch)
-        # Compute the time of passage through perihelion
-        t = Mercury.perihelion_aphelion(epoch)
-        # Get the time of passage through the node
-        time, r = passage_nodes_elliptic(arg, e, a, t, ascending)
-        return time, r
+        # First approximation
+        k = 4.15201 * (self.epoch.year() - 2000.12)
+        k = round(k)
+        jde = 2451590.257 + k * 87.96934963
+        # Compute the epochs half a day before and after
+        sol = self._interpolate_jde(jde, 0.5)
+        return Epoch(sol)
 
-    @staticmethod
-    def magnitude(sun_dist, earth_dist, phase_angle):
+    def magnitude(self, sun_dist, earth_dist, phase_angle):
         """This function computes the approximate magnitude of Mercury.
 
         :param sun_dist: Distance from Mercury to Sun, in Astronomical Units
@@ -548,128 +510,3 @@ class Mercury(Planet):
         m = (1.16 + 5.0 * log10(sun_dist * earth_dist) + 0.02838 * i50 +
              0.0001023 * i50 * i50)
         return round(m, 1)
-
-
-def main():
-
-    # Let's define a small helper function
-    def print_me(msg, val):
-        print("{}: {}".format(msg, val))
-
-    # Let's show some uses of Mercury class
-    print("\n" + 35 * "*")
-    print("*** Use of Mercury class")
-    print(35 * "*" + "\n")
-
-    # Let's now compute the heliocentric position for a given epoch
-    epoch = Epoch(2018, 10, 27.0)
-    lon, lat, r = Mercury.geometric_heliocentric_position(epoch)
-    print_me("Geometric Heliocentric Longitude", lon.to_positive())
-    print_me("Geometric Heliocentric Latitude", lat)
-    print_me("Radius vector", r)
-
-    print("")
-
-    # Compute the geocentric position for 1992/12/20:
-    epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Mercury.geocentric_position(epoch)
-    print_me("Right ascension", ra.ra_str(n_dec=1))
-    print_me("Declination", dec.dms_str(n_dec=1))
-    print_me("Elongation", elon.dms_str(n_dec=1))
-
-    print("")
-
-    # Print mean orbital elements for Mercury at 2065.6.24
-    epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Mercury.orbital_elements_mean_equinox(epoch)
-    print_me("Mean longitude of the planet", round(l, 6))       # 203.494701
-    print_me("Semimajor axis of the orbit (UA)", round(a, 8))   # 0.38709831
-    print_me("Eccentricity of the orbit", round(e, 7))          # 0.2056451
-    print_me("Inclination on plane of the ecliptic", round(i, 6))   # 7.006171
-    print_me("Longitude of the ascending node", round(ome, 5))  # 49.10765
-    print_me("Argument of the perihelion", round(arg, 6))       # 29.367732
-
-    print("")
-
-    # Compute the time of the inferior conjunction close to 1993/10/1
-    epoch = Epoch(1993, 10, 1.0)
-    conjunction = Mercury.inferior_conjunction(epoch)
-    y, m, d = conjunction.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Inferior conjunction date", date)
-
-    # Compute the time of the superior conjunction close to 1993/10/1
-    epoch = Epoch(1993, 10, 1.0)
-    conjunction = Mercury.superior_conjunction(epoch)
-    y, m, d = conjunction.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Superior conjunction date", date)
-
-    print("")
-
-    # Compute the time and angle of the western elongation close to 1993/11/1
-    epoch = Epoch(1993, 11, 1.0)
-    time, elongation = Mercury.western_elongation(epoch)
-    y, m, d = time.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Western elongation date", date)
-    elong = round(elongation, 4)
-    print_me("Maximum western elongation angle", elong)
-
-    print("")
-
-    # Compute the time and angle of the eastern elongation close to 1990/8/1
-    epoch = Epoch(1990, 8, 1.0)
-    time, elongation = Mercury.eastern_elongation(epoch)
-    y, m, d = time.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Eastern elongation date", date)
-    elong = round(elongation, 4)
-    print_me("Maximum eastern elongation angle", elong)
-
-    print("")
-
-    # Compute the time of the station in longitude #1 close to 1993/10/1
-    epoch = Epoch(1993, 10, 1.0)
-    sta1 = Mercury.station_longitude_1(epoch)
-    y, m, d = sta1.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Date of station in longitude #1", date)
-
-    # Compute the time of the station in longitude #2 close to 1993/10/1
-    epoch = Epoch(1993, 10, 1.0)
-    sta2 = Mercury.station_longitude_2(epoch)
-    y, m, d = sta2.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Date of station in longitude #2", date)
-
-    print("")
-
-    # Find the epoch of the Perihelion closer to 2000/01/01
-    epoch = Epoch(2000, 1, 1.0)
-    e = Mercury.perihelion_aphelion(epoch)
-    y, m, d, h, mi, s = e.get_full_date()
-    peri = str(y) + '/' + str(m) + '/' + str(d) + ' at ' + str(h) + ' hours'
-    print_me("The Perihelion closest to 2000/1/1 happened on", peri)
-
-    print("")
-
-    # Compute the time of passage through an ascending node
-    epoch = Epoch(2019, 1, 1)
-    time, r = Mercury.passage_nodes(epoch)
-    y, m, d = time.get_date()
-    d = round(d, 1)
-    print("Time of passage through ascending node: {}/{}/{}".format(y, m, d))
-    # 2018/11/24.7
-    print("Radius vector at ascending node: {}".format(round(r, 4)))  # 0.3143
-
-
-if __name__ == "__main__":
-
-    main()

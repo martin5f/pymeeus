@@ -18,9 +18,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pymeeus.base import TOL
-from pymeeus.Neptune import Neptune
-from pymeeus.Epoch import Epoch
+from pymeeus_oo.calculation.base import TOL
+from pymeeus_oo.constellations.constellations import Constellation
+from pymeeus_oo.planets.earth import Earth
+from pymeeus_oo.planets.neptune import Neptune
+from pymeeus_oo.calculation.epoch import Epoch
 
 
 # Neptune class
@@ -29,7 +31,7 @@ def test_neptune_geometric_heliocentric_position():
     """Tests the geometric_heliocentric_position() method of Neptune class"""
 
     epoch = Epoch(2018, 10, 27.0)
-    lon, lat, r = Neptune.geometric_heliocentric_position(epoch)
+    lon, lat, r = Neptune(epoch).geometric_heliocentric_position()
 
     assert abs(round(lon.to_positive(), 4) - 345.3776) < TOL, \
         "ERROR: 1st geometric_heliocentric_position() test doesn't match"
@@ -45,7 +47,7 @@ def test_neptune_orbital_elements_mean_equinox():
     """Tests the orbital_elements_mean_equinox() method of Neptune class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Neptune.orbital_elements_mean_equinox(epoch)
+    l, a, e, i, ome, arg = Neptune(epoch).orbital_elements_mean_equinox()
 
     assert abs(round(l, 6) - 88.321947) < TOL, \
         "ERROR: 1st orbital_elements_mean_equinox() test doesn't match"
@@ -70,7 +72,7 @@ def test_neptune_orbital_elements_j2000():
     """Tests the orbital_elements_j2000() method of Neptune class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Neptune.orbital_elements_j2000(epoch)
+    l, a, e, i, ome, arg = Neptune(epoch).orbital_elements_j2000()
 
     assert abs(round(l, 6) - 87.407029) < TOL, \
         "ERROR: 1st orbital_elements_j2000() test doesn't match"
@@ -95,7 +97,8 @@ def test_neptune_geocentric_position():
     """Tests the geocentric_position() method of Neptune class"""
 
     epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Neptune.geocentric_position(epoch)
+    constellation = Constellation(Earth(epoch), Neptune(epoch))
+    ra, dec, elon = constellation.geocentric_position()
 
     assert ra.ra_str(n_dec=1) == "19h 17' 14.5''", \
         "ERROR: 1st geocentric_position() test doesn't match"
@@ -111,7 +114,7 @@ def test_neptune_conjunction():
     """Tests the conjunction() method of Neptune class"""
 
     epoch = Epoch(1993, 10, 1.0)
-    conjunction = Neptune.conjunction(epoch)
+    conjunction = Neptune(epoch).conjunction()
     y, m, d = conjunction.get_date()
 
     assert abs(round(y, 0) - 1994) < TOL, \
@@ -128,7 +131,7 @@ def test_neptune_opposition():
     """Tests the opposition() method of Neptune class"""
 
     epoch = Epoch(1846, 8, 1)
-    oppo = Neptune.opposition(epoch)
+    oppo = Neptune(epoch).opposition()
     y, m, d = oppo.get_date()
 
     assert abs(round(y, 0) - 1846) < TOL, \

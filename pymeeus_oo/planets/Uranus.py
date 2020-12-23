@@ -20,15 +20,10 @@
 
 from math import sin, cos, log10
 
-from pymeeus_oo.calculation.Angle import Angle
-from pymeeus_oo.calculation.Coordinates import (
-    passage_nodes_elliptic
-)
-from pymeeus_oo.calculation.Epoch import Epoch
-from pymeeus_oo.calculation.Interpolation import Interpolation
-from pymeeus_oo.parameters.Uranus_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
-from pymeeus_oo.parameters.Venus_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
-from pymeeus_oo.planets.Planet import Planet
+from pymeeus_oo.calculation.angle import Angle
+from pymeeus_oo.calculation.epoch import Epoch
+from pymeeus_oo.parameters.uranus_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
+from pymeeus_oo.planets.planet import Planet
 
 """
 .. module:: Uranus
@@ -47,8 +42,7 @@ class Uranus(Planet):
     def __init__(self, epoch):
         super().__init__(epoch, VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000)
 
-    @staticmethod
-    def conjunction(epoch: Epoch) -> Epoch:
+    def conjunction(self) -> Epoch:
         """This method computes the time of the conjunction closest to the
         given epoch.
 
@@ -71,11 +65,8 @@ class Uranus(Planet):
         12.7365
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Uranus' conjunction
@@ -106,8 +97,7 @@ class Uranus(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def opposition(epoch: Epoch) -> Epoch:
+    def opposition(self) -> Epoch:
         """This method computes the time of the opposition closest to the given
         epoch.
 
@@ -130,11 +120,8 @@ class Uranus(Planet):
         17.5998
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Uranus' opposition
@@ -165,8 +152,7 @@ class Uranus(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def perihelion_aphelion(epoch: Epoch, perihelion=True) -> Epoch:
+    def aphelion(self) -> Epoch:
         """This method computes the time of Perihelion (or Aphelion) closer to
         a given epoch.
 
@@ -203,66 +189,60 @@ class Uranus(Planet):
         22
         """
 
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input value")
         # First approximation
-        k = 0.0119 * (epoch.year() - 2051.1)
-        if perihelion:
-            k = round(k)
-        else:
-            k = round(k + 0.5) - 0.5
+        k = 0.0119 * (self.epoch.year() - 2051.1)
+        k = round(k + 0.5) - 0.5
         jde = 2470213.5 + k * (30694.8767 - k * 0.00541)
         # Compute the epochs 1 year before and after
-        jde_before = jde - 360.0
-        jde_after = jde + 360.0
         # Compute the Sun-Uranus distance for each epoch
-        l, b, r_b = Uranus.geometric_heliocentric_position(Epoch(jde_before))
-        l, b, r = Uranus.geometric_heliocentric_position(Epoch(jde))
-        l, b, r_a = Uranus.geometric_heliocentric_position(Epoch(jde_after))
-        # Call an interpolation object
-        m = Interpolation([jde_before, jde, jde_after], [r_b, r, r_a])
-        sol = m.minmax()
+        sol = self._interpolate_jde(jde, delta=360.0)
         return Epoch(sol)
 
-    @staticmethod
-    def passage_nodes(epoch: Epoch, ascending=True) -> (Epoch, float):
-        """This function computes the time of passage by the nodes (ascending
-        or descending) of Uranus, nearest to the given epoch.
+    def perihelion(self) -> Epoch:
+        """This method computes the time of Perihelion (or Aphelion) closer to
+        a given epoch.
 
-        :param epoch: Epoch closest to the node passage
+        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
         :type epoch: :py:class:`Epoch`
-        :param ascending: Whether the time of passage by the ascending (True)
-            or descending (False) node will be computed
-        :type ascending: bool
+        :param peihelion: If True, the epoch of the closest Perihelion is
+            computed, if False, the epoch of the closest Aphelion is found.
+        :type bool:
 
-        :returns: Tuple containing:
-            - Time of passage through the node (:py:class:`Epoch`)
-            - Radius vector when passing through the node (in AU, float)
-        :rtype: tuple
+        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :rtype: :py:class:`Epoch`
         :raises: TypeError if input values are of wrong type.
 
-        >>> epoch = Epoch(2019, 1, 1)
-        >>> time, r = Uranus.passage_nodes(epoch)
-        >>> year, month, day = time.get_date()
-        >>> print(year)
-        2028
-        >>> print(month)
-        8
-        >>> print(round(day, 1))
-        23.2
-        >>> print(round(r, 4))
-        19.3201
+        .. note:: The solution provided by this method may have several days of
+            error.
+
+        >>> epoch = Epoch(1880, 1, 1.0)
+        >>> e = Uranus.perihelion_aphelion(epoch)
+        >>> y, m, d = e.get_date()
+        >>> print(y)
+        1882
+        >>> print(m)
+        3
+        >>> print(int(d))
+        18
+        >>> epoch = Epoch(2090, 1, 1.0)
+        >>> e = Uranus.perihelion_aphelion(epoch, perihelion=False)
+        >>> y, m, d = e.get_date()
+        >>> print(y)
+        2092
+        >>> print(m)
+        11
+        >>> print(int(d))
+        22
         """
 
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input types")
-        # Get the orbital parameters
-        l, a, e, i, ome, arg = Uranus.orbital_elements_mean_equinox(epoch)
-        # Compute the time of passage through perihelion
-        t = Uranus.perihelion_aphelion(epoch)
-        # Get the time of passage through the node
-        time, r = passage_nodes_elliptic(arg, e, a, t, ascending)
-        return time, r
+        # First approximation
+        k = 0.0119 * (self.epoch.year() - 2051.1)
+        k = round(k)
+        jde = 2470213.5 + k * (30694.8767 - k * 0.00541)
+        # Compute the epochs 1 year before and after
+        # Compute the Sun-Uranus distance for each epoch
+        sol = self._interpolate_jde(jde, delta=360.0)
+        return Epoch(sol)
 
     @staticmethod
     def magnitude(sun_dist, earth_dist):
@@ -282,86 +262,3 @@ class Uranus(Planet):
             raise TypeError("Invalid input types")
         m = -6.85 + 5.0 * log10(sun_dist * earth_dist)
         return round(m, 1)
-
-
-def main():
-
-    # Let's define a small helper function
-    def print_me(msg, val):
-        print("{}: {}".format(msg, val))
-
-    # Let's show some uses of Uranus class
-    print("\n" + 35 * "*")
-    print("*** Use of Uranus class")
-    print(35 * "*" + "\n")
-
-    # Let's now compute the heliocentric position for a given epoch
-    epoch = Epoch(2018, 10, 27.0)
-    lon, lat, r = Uranus.geometric_heliocentric_position(epoch)
-    print_me("Geometric Heliocentric Longitude", lon.to_positive())
-    print_me("Geometric Heliocentric Latitude", lat)
-    print_me("Radius vector", r)
-
-    print("")
-
-    # Compute the geocentric position for 1992/12/20:
-    epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Uranus.geocentric_position(epoch)
-    print_me("Right ascension", ra.ra_str(n_dec=1))
-    print_me("Declination", dec.dms_str(n_dec=1))
-    print_me("Elongation", elon.dms_str(n_dec=1))
-
-    print("")
-
-    # Print mean orbital elements for Uranus at 2065.6.24
-    epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Uranus.orbital_elements_mean_equinox(epoch)
-    print_me("Mean longitude of the planet", round(l, 6))  # 235.517526
-    print_me("Semimajor axis of the orbit (UA)", round(a, 8))  # 19.21844604
-    print_me("Eccentricity of the orbit", round(e, 7))  # 0.0463634
-    print_me("Inclination on plane of the ecliptic", round(i, 6))  # 0.77372
-    print_me("Longitude of the ascending node", round(ome, 5))  # 74.34776
-    print_me("Argument of the perihelion", round(arg, 6))  # 99.630865
-
-    print("")
-
-    # Compute the time of the conjunction close to 1993/10/1
-    epoch = Epoch(1993, 10, 1.0)
-    conj = Uranus.conjunction(epoch)
-    y, m, d = conj.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Conjunction date", date)
-
-    # Compute the time of the opposition close to 1780/12/1
-    epoch = Epoch(1780, 12, 1.0)
-    oppo = Uranus.opposition(epoch)
-    y, m, d = oppo.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Opposition date", date)
-
-    print("")
-
-    # Find the epoch of the Perihelion closer to 1780/1/1
-    epoch = Epoch(1780, 1, 1.0)
-    e = Uranus.perihelion_aphelion(epoch)
-    y, m, d = e.get_date()
-    peri = str(y) + '/' + str(m) + '/' + str(int(d))
-    print_me("The Perihelion closest to 1780/1/1 happened on", peri)
-
-    print("")
-
-    # Compute the time of passage through an ascending node
-    epoch = Epoch(2019, 1, 1)
-    time, r = Uranus.passage_nodes(epoch)
-    y, m, d = time.get_date()
-    d = round(d, 1)
-    print("Time of passage through ascending node: {}/{}/{}".format(y, m, d))
-    # 2028/8/23.2
-    print("Radius vector at ascending node: {}".format(round(r, 4)))  # 19.3201
-
-
-if __name__ == "__main__":
-
-    main()

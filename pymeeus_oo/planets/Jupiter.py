@@ -20,15 +20,10 @@
 
 from math import sin, cos, log10
 
-from pymeeus_oo.calculation.Angle import Angle
-from pymeeus_oo.calculation.Coordinates import (
-    passage_nodes_elliptic
-)
-from pymeeus_oo.calculation.Epoch import Epoch
-from pymeeus_oo.calculation.Interpolation import Interpolation
-from pymeeus_oo.parameters.Jupiter_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
-from pymeeus_oo.parameters.Venus_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
-from pymeeus_oo.planets.Planet import Planet
+from pymeeus_oo.calculation.angle import Angle
+from pymeeus_oo.calculation.epoch import Epoch
+from pymeeus_oo.parameters.jupiter_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
+from pymeeus_oo.planets.planet import Planet
 
 """
 .. module:: Jupiter
@@ -47,8 +42,7 @@ class Jupiter(Planet):
     def __init__(self, epoch):
         super().__init__(epoch, VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000)
 
-    @staticmethod
-    def conjunction(epoch: Epoch) -> Epoch:
+    def conjunction(self) -> Epoch:
         """This method computes the time of the conjunction closest to the
         given epoch.
 
@@ -71,11 +65,8 @@ class Jupiter(Planet):
         18.3341
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Jupiter's conjunction
@@ -104,8 +95,7 @@ class Jupiter(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def opposition(epoch: Epoch) -> Epoch:
+    def opposition(self) -> Epoch:
         """This method computes the time of the opposition closest to the given
         epoch.
 
@@ -128,11 +118,8 @@ class Jupiter(Planet):
         15.2865
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Jupiter's opposition
@@ -161,8 +148,7 @@ class Jupiter(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def station_longitude_1(epoch: Epoch) -> Epoch:
+    def station_longitude_1(self) -> Epoch:
         """This method computes the time of the 1st station in longitude
         (i.e. when the planet is stationary and begins to move westward -
         retrograde - among the starts) closest to the given epoch.
@@ -186,11 +172,8 @@ class Jupiter(Planet):
         9.1288
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Jupiter's opposition
@@ -219,8 +202,7 @@ class Jupiter(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def station_longitude_2(epoch: Epoch) -> Epoch:
+    def station_longitude_2(self) -> Epoch:
         """This method computes the time of the 2nd station in longitude
         (i.e. when the planet is stationary and begins to move eastward -
         prograde - among the starts) closest to the given epoch.
@@ -244,11 +226,8 @@ class Jupiter(Planet):
         10.6679
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Jupiter's opposition
@@ -277,8 +256,7 @@ class Jupiter(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def perihelion_aphelion(epoch: Epoch, perihelion=True) -> Epoch:
+    def aphelion(self) -> Epoch:
         """This method computes the time of Perihelion (or Aphelion) closer to
         a given epoch.
 
@@ -316,66 +294,61 @@ class Jupiter(Planet):
         6
         """
 
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input value")
         # First approximation
-        k = 0.0843 * (epoch.year() - 2011.2)
-        if perihelion:
-            k = round(k)
-        else:
-            k = round(k + 0.5) - 0.5
+        k = 0.0843 * (self.epoch.year() - 2011.2)
+        k = round(k + 0.5) - 0.5
         jde = 2455636.936 + k * (4332.897065 - k * 0.0001367)
         # Compute the epochs a month before and after
-        jde_before = jde - 30.0
-        jde_after = jde + 30.0
         # Compute the Sun-Jupiter distance for each epoch
-        l, b, r_b = Jupiter.geometric_heliocentric_position(Epoch(jde_before))
-        l, b, r = Jupiter.geometric_heliocentric_position(Epoch(jde))
-        l, b, r_a = Jupiter.geometric_heliocentric_position(Epoch(jde_after))
-        # Call an interpolation object
-        m = Interpolation([jde_before, jde, jde_after], [r_b, r, r_a])
-        sol = m.minmax()
+        sol = self._interpolate_jde(jde, delta=30.0)
         return Epoch(sol)
 
-    @staticmethod
-    def passage_nodes(epoch: Epoch, ascending=True) -> (Epoch, float):
-        """This function computes the time of passage by the nodes (ascending
-        or descending) of Jupiter, nearest to the given epoch.
+    def perihelion(self) -> Epoch:
+        """This method computes the time of Perihelion (or Aphelion) closer to
+        a given epoch.
 
-        :param epoch: Epoch closest to the node passage
+        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
         :type epoch: :py:class:`Epoch`
-        :param ascending: Whether the time of passage by the ascending (True)
-            or descending (False) node will be computed
-        :type ascending: bool
+        :param peihelion: If True, the epoch of the closest Perihelion is
+            computed, if False, the epoch of the closest Aphelion is found.
+        :type bool:
 
-        :returns: Tuple containing:
-            - Time of passage through the node (:py:class:`Epoch`)
-            - Radius vector when passing through the node (in AU, float)
-        :rtype: tuple
+        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :rtype: :py:class:`Epoch`
         :raises: TypeError if input values are of wrong type.
 
-        >>> epoch = Epoch(2019, 1, 1)
-        >>> time, r = Jupiter.passage_nodes(epoch)
-        >>> year, month, day = time.get_date()
-        >>> print(year)
-        2025
-        >>> print(month)
-        9
-        >>> print(round(day, 1))
-        15.6
-        >>> print(round(r, 4))
-        5.1729
+        >>> epoch = Epoch(2019, 2, 23.0)
+        >>> e = Jupiter.perihelion_aphelion(epoch)
+        >>> y, m, d, h, mi, s = e.get_full_date()
+        >>> print(y)
+        2023
+        >>> print(m)
+        1
+        >>> print(d)
+        20
+        >>> print(h)
+        11
+        >>> epoch = Epoch(1981, 6, 1.0)
+        >>> e = Jupiter.perihelion_aphelion(epoch, perihelion=False)
+        >>> y, m, d, h, mi, s = e.get_full_date()
+        >>> print(y)
+        1981
+        >>> print(m)
+        7
+        >>> print(d)
+        28
+        >>> print(h)
+        6
         """
 
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input types")
-        # Get the orbital parameters
-        l, a, e, i, ome, arg = Jupiter.orbital_elements_mean_equinox(epoch)
-        # Compute the time of passage through perihelion
-        t = Jupiter.perihelion_aphelion(epoch)
-        # Get the time of passage through the node
-        time, r = passage_nodes_elliptic(arg, e, a, t, ascending)
-        return time, r
+        # First approximation
+        k = 0.0843 * (self.epoch.year() - 2011.2)
+        k = round(k)
+        jde = 2455636.936 + k * (4332.897065 - k * 0.0001367)
+        # Compute the epochs a month before and after
+        # Compute the Sun-Jupiter distance for each epoch
+        sol = self._interpolate_jde(jde, delta=30.0)
+        return Epoch(sol)
 
     @staticmethod
     def magnitude(sun_dist, earth_dist):
@@ -395,104 +368,3 @@ class Jupiter(Planet):
             raise TypeError("Invalid input types")
         m = -8.93 + 5.0 * log10(sun_dist * earth_dist)
         return round(m, 1)
-
-
-def main():
-
-    # Let's define a small helper function
-    def print_me(msg, val):
-        print("{}: {}".format(msg, val))
-
-    # Let's show some uses of Jupiter class
-    print("\n" + 35 * "*")
-    print("*** Use of Jupiter class")
-    print(35 * "*" + "\n")
-
-    # Let's now compute the heliocentric position for a given epoch
-    epoch = Epoch(2018, 10, 27.0)
-    lon, lat, r = Jupiter.geometric_heliocentric_position(epoch)
-    print_me("Geometric Heliocentric Longitude", lon.to_positive())
-    print_me("Geometric Heliocentric Latitude", lat)
-    print_me("Radius vector", r)
-
-    print("")
-
-    # Compute the geocentric position for 1992/12/20:
-    epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Jupiter.geocentric_position(epoch)
-    print_me("Right ascension", ra.ra_str(n_dec=1))
-    print_me("Declination", dec.dms_str(n_dec=1))
-    print_me("Elongation", elon.dms_str(n_dec=1))
-
-    print("")
-
-    # Print mean orbital elements for Jupiter at 2065.6.24
-    epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Jupiter.orbital_elements_mean_equinox(epoch)
-    print_me("Mean longitude of the planet", round(l, 6))       # 222.433723
-    print_me("Semimajor axis of the orbit (UA)", round(a, 8))   # 5.20260333
-    print_me("Eccentricity of the orbit", round(e, 7))          # 0.0486046
-    print_me("Inclination on plane of the ecliptic", round(i, 6))   # 1.29967
-    print_me("Longitude of the ascending node", round(ome, 5))  # 101.13309
-    print_me("Argument of the perihelion", round(arg, 6))       # -85.745532
-
-    print("")
-
-    # Compute the time of the conjunction close to 1993/10/1
-    epoch = Epoch(1993, 10, 1.0)
-    conj = Jupiter.conjunction(epoch)
-    y, m, d = conj.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Conjunction date", date)
-
-    # Compute the time of the opposition close to -6/9/1
-    epoch = Epoch(-6, 9, 1.0)
-    oppo = Jupiter.opposition(epoch)
-    y, m, d = oppo.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Opposition date", date)
-
-    print("")
-
-    # Compute the time of the station in longitude #1 close to 2018/11/1
-    epoch = Epoch(2018, 11, 1.0)
-    sta1 = Jupiter.station_longitude_1(epoch)
-    y, m, d = sta1.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Date of station in longitude #1", date)
-
-    # Compute the time of the station in longitude #2 close to 2018/11/1
-    epoch = Epoch(2018, 11, 1.0)
-    sta2 = Jupiter.station_longitude_2(epoch)
-    y, m, d = sta2.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Date of station in longitude #2", date)
-
-    print("")
-
-    # Find the epoch of the Aphelion closer to 1981/6/1
-    epoch = Epoch(1981, 6, 1.0)
-    e = Jupiter.perihelion_aphelion(epoch, perihelion=False)
-    y, m, d, h, mi, s = e.get_full_date()
-    peri = str(y) + '/' + str(m) + '/' + str(d) + ' at ' + str(h) + ' hours'
-    print_me("The Aphelion closest to 1981/6/1 will happen on", peri)
-
-    print("")
-
-    # Compute the time of passage through an ascending node
-    epoch = Epoch(2019, 1, 1)
-    time, r = Jupiter.passage_nodes(epoch)
-    y, m, d = time.get_date()
-    d = round(d, 1)
-    print("Time of passage through ascending node: {}/{}/{}".format(y, m, d))
-    # 2025/9/15.6
-    print("Radius vector at ascending node: {}".format(round(r, 4)))  # 5.1729
-
-
-if __name__ == "__main__":
-
-    main()

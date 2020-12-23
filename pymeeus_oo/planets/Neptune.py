@@ -20,10 +20,10 @@
 
 from math import sin, cos, log10
 
-from pymeeus_oo.calculation.Angle import Angle
-from pymeeus_oo.calculation.Epoch import Epoch
-from pymeeus_oo.parameters.Neptune_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
-from pymeeus_oo.planets.Planet import Planet
+from pymeeus_oo.calculation.angle import Angle
+from pymeeus_oo.calculation.epoch import Epoch
+from pymeeus_oo.parameters.neptune_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
+from pymeeus_oo.planets.planet import Planet
 
 """
 .. module:: Neptune
@@ -42,8 +42,7 @@ class Neptune(Planet):
     def __init__(self, epoch):
         super().__init__(epoch, VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000)
 
-    @staticmethod
-    def conjunction(epoch: Epoch) -> Epoch:
+    def conjunction(self) -> Epoch:
         """This method computes the time of the conjunction closest to the
         given epoch.
 
@@ -66,11 +65,8 @@ class Neptune(Planet):
         11.3057
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Neptune's conjunction
@@ -100,8 +96,7 @@ class Neptune(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def opposition(epoch: Epoch) -> Epoch:
+    def opposition(self) -> Epoch:
         """This method computes the time of the opposition closest to the given
         epoch.
 
@@ -124,11 +119,8 @@ class Neptune(Planet):
         20.1623
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Neptune's opposition
@@ -158,6 +150,24 @@ class Neptune(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
+    def aphelion(self) -> Epoch:
+        """This method computes the time of Aphelion closest to the epoch of initialization.
+        Subclasses are required to implement this method.
+
+        :returns: The epoch of the desired Aphelion
+        :rtype: :py:class:`Epoch`
+        """
+        raise NotImplementedError
+
+    def perihelion(self) -> Epoch:
+        """This method computes the time of Perihelion closest to the epoch of initialization.
+        Subclasses are required to implement this method.
+
+        :returns: The epoch of the desired Perihelion
+        :rtype: :py:class:`Epoch`
+        """
+        raise NotImplementedError
+
     @staticmethod
     def magnitude(sun_dist, earth_dist):
         """This function computes the approximate magnitude of Neptune.
@@ -176,66 +186,3 @@ class Neptune(Planet):
             raise TypeError("Invalid input types")
         m = -7.05 + 5.0 * log10(sun_dist * earth_dist)
         return round(m, 1)
-
-
-def main():
-
-    # Let's define a small helper function
-    def print_me(msg, val):
-        print("{}: {}".format(msg, val))
-
-    # Let's show some uses of Neptune class
-    print("\n" + 35 * "*")
-    print("*** Use of Neptune class")
-    print(35 * "*" + "\n")
-
-    # Let's now compute the heliocentric position for a given epoch
-    epoch = Epoch(2018, 10, 27.0)
-    lon, lat, r = Neptune.geometric_heliocentric_position(epoch)
-    print_me("Geometric Heliocentric Longitude", lon.to_positive())
-    print_me("Geometric Heliocentric Latitude", lat)
-    print_me("Radius vector", r)
-
-    print("")
-
-    # Compute the geocentric position for 1992/12/20:
-    epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Neptune.geocentric_position(epoch)
-    print_me("Right ascension", ra.ra_str(n_dec=1))
-    print_me("Declination", dec.dms_str(n_dec=1))
-    print_me("Elongation", elon.dms_str(n_dec=1))
-
-    print("")
-
-    # Print mean orbital elements for Neptune at 2065.6.24
-    epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Neptune.orbital_elements_mean_equinox(epoch)
-    print_me("Mean longitude of the planet", round(l, 6))  # 88.321947
-    print_me("Semimajor axis of the orbit (UA)", round(a, 8))  # 30.11038676
-    print_me("Eccentricity of the orbit", round(e, 7))  # 0.0094597
-    print_me("Inclination on plane of the ecliptic", round(i, 6))  # 1.763855
-    print_me("Longitude of the ascending node", round(ome, 5))  # 132.46986
-    print_me("Argument of the perihelion", round(arg, 6))  # -83.415521
-
-    print("")
-
-    # Compute the time of the conjunction close to 1993/10/1
-    epoch = Epoch(1993, 10, 1.0)
-    conj = Neptune.conjunction(epoch)
-    y, m, d = conj.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Conjunction date", date)
-
-    # Compute the time of the opposition close to 1846/8/1
-    epoch = Epoch(1846, 8, 1)
-    oppo = Neptune.opposition(epoch)
-    y, m, d = oppo.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Opposition date", date)
-
-
-if __name__ == "__main__":
-
-    main()

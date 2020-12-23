@@ -18,10 +18,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pymeeus.base import TOL
-from pymeeus.Angle import Angle
-from pymeeus.Minor import Minor
-from pymeeus.Epoch import Epoch
+from pymeeus_oo.calculation.base import TOL
+from pymeeus_oo.constellations.constellations import Constellation
+from pymeeus_oo.planets.earth import Earth
+from pymeeus_oo.planets.minor import Minor
+from pymeeus_oo.calculation.epoch import Epoch
+from pymeeus_oo.calculation.angle import Angle
 
 
 # Minor class

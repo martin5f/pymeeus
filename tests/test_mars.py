@@ -18,9 +18,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pymeeus.base import TOL
-from pymeeus.Mars import Mars
-from pymeeus.Epoch import Epoch
+from pymeeus_oo.calculation.base import TOL
+from pymeeus_oo.constellations.constellations import Constellation
+from pymeeus_oo.planets.earth import Earth
+from pymeeus_oo.planets.mars import Mars
+from pymeeus_oo.calculation.epoch import Epoch
 
 
 # Mars class
@@ -29,7 +31,7 @@ def test_mars_geometric_heliocentric_position():
     """Tests the geometric_heliocentric_position() method of Mars class"""
 
     epoch = Epoch(2018, 10, 27.0)
-    lon, lat, r = Mars.geometric_heliocentric_position(epoch)
+    lon, lat, r = Mars(epoch).geometric_heliocentric_position()
 
     assert abs(round(lon.to_positive(), 4) - 2.0015) < TOL, \
         "ERROR: 1st geometric_heliocentric_position() test doesn't match"
@@ -45,7 +47,7 @@ def test_mars_orbital_elements_mean_equinox():
     """Tests the orbital_elements_mean_equinox() method of Mars class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Mars.orbital_elements_mean_equinox(epoch)
+    l, a, e, i, ome, arg = Mars(epoch).orbital_elements_mean_equinox()
 
     assert abs(round(l, 6) - 288.855211) < TOL, \
         "ERROR: 1st orbital_elements_mean_equinox() test doesn't match"
@@ -70,7 +72,7 @@ def test_mars_orbital_elements_j2000():
     """Tests the orbital_elements_j2000() method of Mars class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Mars.orbital_elements_j2000(epoch)
+    l, a, e, i, ome, arg = Mars(epoch).orbital_elements_j2000()
 
     assert abs(round(l, 6) - 287.94027) < TOL, \
         "ERROR: 1st orbital_elements_j2000() test doesn't match"
@@ -95,7 +97,8 @@ def test_mars_geocentric_position():
     """Tests the geocentric_position() method of Mars class"""
 
     epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Mars.geocentric_position(epoch)
+    constellation = Constellation(Earth(epoch), Mars(epoch))
+    ra, dec, elon = constellation.geocentric_position()
 
     assert ra.ra_str(n_dec=1) == "7h 48' 35.4''", \
         "ERROR: 1st geocentric_position() test doesn't match"
@@ -111,7 +114,7 @@ def test_mars_conjunction():
     """Tests the conjunction() method of Mars class"""
 
     epoch = Epoch(1993, 10, 1.0)
-    conjunction = Mars.conjunction(epoch)
+    conjunction = Mars(epoch).conjunction()
     y, m, d = conjunction.get_date()
 
     assert abs(round(y, 0) - 1993) < TOL, \
@@ -128,7 +131,7 @@ def test_mars_superior_conjunction():
     """Tests the opposition() method of Mars class"""
 
     epoch = Epoch(2729, 10, 1.0)
-    oppo = Mars.opposition(epoch)
+    oppo = Mars(epoch).opposition()
     y, m, d = oppo.get_date()
 
     assert abs(round(y, 0) - 2729) < TOL, \
@@ -145,7 +148,7 @@ def test_mars_station_longitude_1():
     """Tests the station_longitude_1() method of Mars class"""
 
     epoch = Epoch(1997, 3, 1.0)
-    sta1 = Mars.station_longitude_1(epoch)
+    sta1 = Mars(epoch).station_longitude_1()
     y, m, d = sta1.get_date()
 
     assert abs(round(y, 0) - 1997) < TOL, \
@@ -162,7 +165,7 @@ def test_mars_station_longitude_2():
     """Tests the station_longitude_2() method of Mars class"""
 
     epoch = Epoch(1997, 3, 1.0)
-    sta2 = Mars.station_longitude_2(epoch)
+    sta2 = Mars(epoch).station_longitude_2()
     y, m, d = sta2.get_date()
 
     assert abs(round(y, 0) - 1997) < TOL, \
@@ -179,7 +182,7 @@ def test_mars_perihelion_aphelion():
     """Tests the perihelion_aphelion() method of Mars class"""
 
     epoch = Epoch(2019, 2, 23.0)
-    e = Mars.perihelion_aphelion(epoch)
+    e = Mars(epoch).perihelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 2018) < TOL, \
@@ -195,7 +198,7 @@ def test_mars_perihelion_aphelion():
         "ERROR: 4th perihelion_aphelion() test doesn't match"
 
     epoch = Epoch(2032, 1, 1.0)
-    e = Mars.perihelion_aphelion(epoch, perihelion=False)
+    e = Mars(epoch).aphelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 2032) < TOL, \
@@ -215,7 +218,7 @@ def test_mars_passage_nodes():
     """Tests the passage_nodes() method of Mars class"""
 
     epoch = Epoch(2019, 1, 1)
-    time, r = Mars.passage_nodes(epoch)
+    time, r = Mars(epoch).passage_nodes()
     y, m, d = time.get_date()
     d = round(d, 1)
     r = round(r, 4)

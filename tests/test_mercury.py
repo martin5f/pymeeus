@@ -18,9 +18,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pymeeus.base import TOL
-from pymeeus.Mercury import Mercury
-from pymeeus.Epoch import Epoch
+from pymeeus_oo.calculation.base import TOL
+from pymeeus_oo.constellations.constellations import Constellation
+from pymeeus_oo.planets.earth import Earth
+from pymeeus_oo.planets.mercury import Mercury
+from pymeeus_oo.calculation.epoch import Epoch
 
 
 # Mercury class
@@ -29,7 +31,7 @@ def test_mercury_geometric_heliocentric_position():
     """Tests the geometric_heliocentric_position() method of Mercury class"""
 
     epoch = Epoch(2018, 10, 27.0)
-    lon, lat, r = Mercury.geometric_heliocentric_position(epoch)
+    lon, lat, r = Mercury(epoch).geometric_heliocentric_position()
 
     assert abs(round(lon.to_positive(), 4) - 287.4887) < TOL, \
         "ERROR: 1st geometric_heliocentric_position() test doesn't match"
@@ -45,7 +47,7 @@ def test_mercury_orbital_elements_mean_equinox():
     """Tests the orbital_elements_mean_equinox() method of Mercury class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Mercury.orbital_elements_mean_equinox(epoch)
+    l, a, e, i, ome, arg = Mercury(epoch).orbital_elements_mean_equinox()
 
     assert abs(round(l, 6) - 203.494701) < TOL, \
         "ERROR: 1st orbital_elements_mean_equinox() test doesn't match"
@@ -70,7 +72,7 @@ def test_mercury_orbital_elements_j2000():
     """Tests the orbital_elements_j2000() method of Mercury class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Mercury.orbital_elements_j2000(epoch)
+    l, a, e, i, ome, arg = Mercury(epoch).orbital_elements_j2000()
 
     assert abs(round(l, 6) - 202.579453) < TOL, \
         "ERROR: 1st orbital_elements_j2000() test doesn't match"
@@ -95,7 +97,8 @@ def test_mercury_geocentric_position():
     """Tests the geocentric_position() method of Mercury class"""
 
     epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Mercury.geocentric_position(epoch)
+    constellation = Constellation(Earth(epoch), Mercury(epoch))
+    ra, dec, elon = constellation.geocentric_position()
 
     assert ra.ra_str(n_dec=1) == "16h 33' 59.3''", \
         "ERROR: 1st geocentric_position() test doesn't match"
@@ -111,7 +114,7 @@ def test_mercury_inferior_conjunction():
     """Tests the inferior_conjunction() method of Mercury class"""
 
     epoch = Epoch(1993, 10, 1.0)
-    conjunction = Mercury.inferior_conjunction(epoch)
+    conjunction = Mercury(epoch).inferior_conjunction()
     y, m, d = conjunction.get_date()
 
     assert abs(round(y, 0) - 1993) < TOL, \
@@ -124,7 +127,7 @@ def test_mercury_inferior_conjunction():
         "ERROR: 3rd inferior_conjunction() test doesn't match"
 
     epoch = Epoch(1631, 10, 1.0)
-    conjunction = Mercury.inferior_conjunction(epoch)
+    conjunction = Mercury(epoch).inferior_conjunction()
     y, m, d = conjunction.get_date()
 
     assert abs(round(y, 0) - 1631) < TOL, \
@@ -141,7 +144,7 @@ def test_mercury_superior_conjunction():
     """Tests the superior_conjunction() method of Mercury class"""
 
     epoch = Epoch(1993, 10, 1.0)
-    conjunction = Mercury.superior_conjunction(epoch)
+    conjunction = Mercury(epoch).superior_conjunction()
     y, m, d = conjunction.get_date()
 
     assert abs(round(y, 0) - 1993) < TOL, \
@@ -158,7 +161,7 @@ def test_mercury_western_elongation():
     """Tests the western_elongation() method of Mercury class"""
 
     epoch = Epoch(1993, 11, 1.0)
-    time, elongation = Mercury.western_elongation(epoch)
+    time, elongation = Mercury(epoch).western_elongation()
     y, m, d = time.get_date()
 
     assert abs(round(y, 0) - 1993) < TOL, \
@@ -178,7 +181,7 @@ def test_mercury_eastern_elongation():
     """Tests the eastern_elongation() method of Mercury class"""
 
     epoch = Epoch(1990, 8, 1.0)
-    time, elongation = Mercury.eastern_elongation(epoch)
+    time, elongation = Mercury(epoch).eastern_elongation()
     y, m, d = time.get_date()
 
     assert abs(round(y, 0) - 1990) < TOL, \
@@ -198,7 +201,7 @@ def test_mercury_station_longitude_1():
     """Tests the station_longitude_1() method of Mercury class"""
 
     epoch = Epoch(1993, 10, 1.0)
-    sta1 = Mercury.station_longitude_1(epoch)
+    sta1 = Mercury(epoch).station_longitude_1()
     y, m, d = sta1.get_date()
 
     assert abs(round(y, 0) - 1993) < TOL, \
@@ -215,7 +218,7 @@ def test_mercury_station_longitude_2():
     """Tests the station_longitude_2() method of Mercury class"""
 
     epoch = Epoch(1993, 10, 1.0)
-    sta2 = Mercury.station_longitude_2(epoch)
+    sta2 = Mercury(epoch).station_longitude_2()
     y, m, d = sta2.get_date()
 
     assert abs(round(y, 0) - 1993) < TOL, \
@@ -232,7 +235,7 @@ def test_mercury_perihelion_aphelion():
     """Tests the perihelion_aphelion() method of Mercury class"""
 
     epoch = Epoch(2000, 1, 1.0)
-    e = Mercury.perihelion_aphelion(epoch)
+    e = Mercury(epoch).perihelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 2000) < TOL, \
@@ -248,7 +251,7 @@ def test_mercury_perihelion_aphelion():
         "ERROR: 4th perihelion_aphelion() test doesn't match"
 
     epoch = Epoch(2000, 3, 1.0)
-    e = Mercury.perihelion_aphelion(epoch, perihelion=False)
+    e = Mercury(epoch).aphelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 2000) < TOL, \
@@ -268,7 +271,7 @@ def test_mercury_passage_nodes():
     """Tests the passage_nodes() method of Mercury class"""
 
     epoch = Epoch(2019, 1, 1)
-    time, r = Mercury.passage_nodes(epoch)
+    time, r = Mercury(epoch).passage_nodes()
     y, m, d = time.get_date()
     d = round(d, 1)
     r = round(r, 4)

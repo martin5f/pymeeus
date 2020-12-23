@@ -20,13 +20,10 @@
 
 from math import sin, cos, log10
 
-from pymeeus_oo.calculation.Angle import Angle
-from pymeeus_oo.calculation.Epoch import Epoch
-from pymeeus_oo.calculation.Interpolation import Interpolation
-from pymeeus_oo.constellations.constellations import Constellation
-from pymeeus_oo.parameters.Mars_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
-from pymeeus_oo.planets.Earth import Earth
-from pymeeus_oo.planets.Planet import Planet
+from pymeeus_oo.calculation.angle import Angle
+from pymeeus_oo.calculation.epoch import Epoch
+from pymeeus_oo.parameters.mars_params import VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000
+from pymeeus_oo.planets.planet import Planet
 
 """
 .. module:: Mars
@@ -45,8 +42,7 @@ class Mars(Planet):
     def __init__(self, epoch):
         super().__init__(epoch, VSOP87_L, VSOP87_B, VSOP87_R, ORBITAL_ELEM, ORBITAL_ELEM_J2000)
 
-    @staticmethod
-    def conjunction(epoch: Epoch) -> Epoch:
+    def conjunction(self) -> Epoch:
         """This method computes the time of the conjunction closest to the
         given epoch.
 
@@ -70,7 +66,7 @@ class Mars(Planet):
         """
 
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mars' conjunction
@@ -98,8 +94,7 @@ class Mars(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def opposition(epoch: Epoch) -> Epoch:
+    def opposition(self) -> Epoch:
         """This method computes the time of the opposition closest to the given
         epoch.
 
@@ -123,7 +118,7 @@ class Mars(Planet):
         """
 
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mars' opposition
@@ -151,8 +146,7 @@ class Mars(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def station_longitude_1(epoch: Epoch) -> Epoch:
+    def station_longitude_1(self) -> Epoch:
         """This method computes the time of the 1st station in longitude
         (i.e. when the planet is stationary and begins to move westward -
         retrograde - among the starts) closest to the given epoch.
@@ -167,7 +161,7 @@ class Mars(Planet):
         """
 
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mars' opposition
@@ -195,8 +189,7 @@ class Mars(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def station_longitude_2(epoch: Epoch) -> Epoch:
+    def station_longitude_2(self) -> Epoch:
         """This method computes the time of the 2nd station in longitude
         (i.e. when the planet is stationary and begins to move eastward -
         prograde - among the starts) closest to the given epoch.
@@ -211,7 +204,7 @@ class Mars(Planet):
         """
 
         # Check that the input epoch is within valid range
-        y = epoch.year()
+        y = self.epoch.year()
         if y < -2000.0 or y > 4000.0:
             raise ValueError("Epoch outside the -2000/4000 range")
         # Set some specific constants for Mars' opposition
@@ -239,8 +232,7 @@ class Mars(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    @staticmethod
-    def perihelion(epoch: Epoch) -> Epoch:
+    def aphelion(self) -> Epoch:
         """This method computes the time of Perihelion (or Aphelion) closer to
         a given epoch.
 
@@ -256,52 +248,37 @@ class Mars(Planet):
         """
 
         # First approximation
-        k = 0.53166 * (epoch.year() - 2001.78)
-        k = round(k)  # formula for perihelion
-        jde = 2452195.026 + k * (686.9957857 - k * 0.0000001187)
-        # Compute the neighboring epochs half a day before and after
-        sol = Mars.interpolate_jde(jde, delta=0.5)
-        return Epoch(sol)
-
-    @staticmethod
-    def aphelion(epoch: Epoch) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
-        a given epoch.
-
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
-
-        :returns: The epoch of the desired Perihelion (or Aphelion)
-        :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
-        """
-
-        # First approximation
-        k = 0.53166 * (epoch.year() - 2001.78)
+        k = 0.53166 * (self.epoch.year() - 2001.78)
         k = round(k + 0.5) - 0.5  # formula for aphelion
         jde = 2452195.026 + k * (686.9957857 - k * 0.0000001187)
         # Compute the neighboring epochs half a day before and after
-        sol = Mars.interpolate_jde(jde, delta=0.5)
+        sol = self._interpolate_jde(jde, delta=0.5)
         return Epoch(sol)
 
-    @staticmethod
-    def interpolate_jde(jde: float, delta: float) -> float:
-        jde_before = jde - delta
-        jde_after = jde + delta
-        # Compute the Sun-Mars distance for each epoch
-        l, b, r_b = Mars(Epoch(jde_before)).geometric_heliocentric_position()
-        l, b, r = Mars(Epoch(jde)).geometric_heliocentric_position()
-        l, b, r_a = Mars(Epoch(jde_after)).geometric_heliocentric_position()
-        # Call an interpolation object
-        m = Interpolation([jde_before, jde, jde_after], [r_b, r, r_a])
-        sol = m.minmax()
-        return sol
+    def perihelion(self) -> Epoch:
+        """This method computes the time of Perihelion (or Aphelion) closer to
+        a given epoch.
 
-    @staticmethod
-    def magnitude(sun_dist, earth_dist, phase_angle) -> float:
+        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
+        :type epoch: :py:class:`Epoch`
+        :param peihelion: If True, the epoch of the closest Perihelion is
+            computed, if False, the epoch of the closest Aphelion is found.
+        :type bool:
+
+        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :rtype: :py:class:`Epoch`
+        :raises: TypeError if input values are of wrong type.
+        """
+
+        # First approximation
+        k = 0.53166 * (self.epoch.year() - 2001.78)
+        k = round(k)  # formula for perihelion
+        jde = 2452195.026 + k * (686.9957857 - k * 0.0000001187)
+        # Compute the neighboring epochs half a day before and after
+        sol = self._interpolate_jde(jde, delta=0.5)
+        return Epoch(sol)
+
+    def magnitude(self, sun_dist, earth_dist, phase_angle) -> float:
         """This function computes the approximate magnitude of Mars.
 
         :param sun_dist: Distance from Mars to the Sun, in Astronomical Units
@@ -321,108 +298,3 @@ class Mars(Planet):
         i = float(phase_angle)
         m = -1.3 + 5.0 * log10(sun_dist * earth_dist) + 0.01486 * i
         return round(m, 1)
-
-
-def main():
-    # Let's define a small helper function
-    def print_me(msg, val):
-        print("{}: {}".format(msg, val))
-
-    # Let's show some uses of Mars class
-    print("\n" + 35 * "*")
-    print("*** Use of Mars class")
-    print(35 * "*" + "\n")
-
-    # Let's now compute the heliocentric position for a given epoch
-    epoch = Epoch(2018, 10, 27.0)
-    mars = Mars(epoch)
-    lon, lat, r = mars.geometric_heliocentric_position()
-    print_me("Geometric Heliocentric Longitude", lon.to_positive())
-    print_me("Geometric Heliocentric Latitude", lat)
-    print_me("Radius vector", r)
-
-    print("")
-
-    # Compute the geocentric position for 1992/12/20:
-    epoch = Epoch(1992, 12, 20.0)
-    mars = Mars(epoch)
-    earth = Earth(epoch)
-    constellation = Constellation(earth, mars)
-    ra, dec, elon = constellation.geocentric_position()
-    print_me("Right ascension", ra.ra_str(n_dec=1))
-    print_me("Declination", dec.dms_str(n_dec=1))
-    print_me("Elongation", elon.dms_str(n_dec=1))
-
-    print("")
-
-    # Print mean orbital elements for Mars at 2065.6.24
-    epoch = Epoch(2065, 6, 24.0)
-    mars = Mars(epoch)
-    l, a, e, i, ome, arg = mars.orbital_elements_mean_equinox()
-    print_me("Mean longitude of the planet", round(l, 6))  # 288.855211
-    print_me("Semimajor axis of the orbit (UA)", round(a, 8))  # 1.52367934
-    print_me("Eccentricity of the orbit", round(e, 7))  # 0.0934599
-    print_me("Inclination on plane of the ecliptic", round(i, 6))  # 1.849338
-    print_me("Longitude of the ascending node", round(ome, 5))  # 50.06365
-    print_me("Argument of the perihelion", round(arg, 6))  # 287.202108
-
-    print("")
-
-    # Compute the time of the conjunction close to 1993/10/1
-    epoch = Epoch(1993, 10, 1.0)
-    conj = Mars.conjunction(epoch)
-    y, m, d = conj.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Conjunction date", date)
-
-    # Compute the time of the opposition close to 2729/10/1
-    epoch = Epoch(2729, 10, 1.0)
-    oppo = Mars.opposition(epoch)
-    y, m, d = oppo.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Opposition date", date)
-
-    print("")
-
-    # Compute the time of the station in longitude #1 close to 1997/3/1
-    epoch = Epoch(1997, 3, 1.0)
-    sta1 = Mars.station_longitude_1(epoch)
-    y, m, d = sta1.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Date of station in longitude #1", date)
-
-    # Compute the time of the station in longitude #2 close to 1997/3/1
-    epoch = Epoch(1997, 3, 1.0)
-    sta2 = Mars.station_longitude_2(epoch)
-    y, m, d = sta2.get_date()
-    d = round(d, 4)
-    date = "{}/{}/{}".format(y, m, d)
-    print_me("Date of station in longitude #2", date)
-
-    print("")
-
-    # Find the epoch of the Aphelion closer to 2032/1/1
-    epoch = Epoch(2032, 1, 1.0)
-    e = Mars.aphelion(epoch)
-    y, m, d, h, mi, s = e.get_full_date()
-    peri = str(y) + '/' + str(m) + '/' + str(d) + ' at ' + str(h) + ' hours'
-    print_me("The Aphelion closest to 2032/1/1 will happen on", peri)
-
-    print("")
-
-    # Compute the time of passage through an ascending node
-    epoch = Epoch(2019, 1, 1)
-    mars = Mars(epoch)
-    time, r = mars.passage_nodes()
-    y, m, d = time.get_date()
-    d = round(d, 1)
-    print("Time of passage through ascending node: {}/{}/{}".format(y, m, d))
-    # 2019/1/15.2
-    print("Radius vector at ascending node: {}".format(round(r, 4)))  # 1.4709
-
-
-if __name__ == "__main__":
-    main()

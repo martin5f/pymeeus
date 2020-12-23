@@ -18,9 +18,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pymeeus.base import TOL
-from pymeeus.Uranus import Uranus
-from pymeeus.Epoch import Epoch
+from pymeeus_oo.calculation.base import TOL
+from pymeeus_oo.constellations.constellations import Constellation
+from pymeeus_oo.planets.earth import Earth
+from pymeeus_oo.planets.uranus import Uranus
+from pymeeus_oo.calculation.epoch import Epoch
 
 
 # Uranus class
@@ -29,7 +31,7 @@ def test_uranus_geometric_heliocentric_position():
     """Tests the geometric_heliocentric_position() method of Uranus class"""
 
     epoch = Epoch(2018, 10, 27.0)
-    lon, lat, r = Uranus.geometric_heliocentric_position(epoch)
+    lon, lat, r = Uranus(epoch).geometric_heliocentric_position()
 
     assert abs(round(lon.to_positive(), 4) - 30.5888) < TOL, \
         "ERROR: 1st geometric_heliocentric_position() test doesn't match"
@@ -45,7 +47,7 @@ def test_uranus_orbital_elements_mean_equinox():
     """Tests the orbital_elements_mean_equinox() method of Uranus class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Uranus.orbital_elements_mean_equinox(epoch)
+    l, a, e, i, ome, arg = Uranus(epoch).orbital_elements_mean_equinox()
 
     assert abs(round(l, 6) - 235.517526) < TOL, \
         "ERROR: 1st orbital_elements_mean_equinox() test doesn't match"
@@ -70,7 +72,7 @@ def test_uranus_orbital_elements_j2000():
     """Tests the orbital_elements_j2000() method of Uranus class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Uranus.orbital_elements_j2000(epoch)
+    l, a, e, i, ome, arg = Uranus(epoch).orbital_elements_j2000()
 
     assert abs(round(l, 6) - 234.602641) < TOL, \
         "ERROR: 1st orbital_elements_j2000() test doesn't match"
@@ -95,7 +97,8 @@ def test_uranus_geocentric_position():
     """Tests the geocentric_position() method of Uranus class"""
 
     epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Uranus.geocentric_position(epoch)
+    constellation = Constellation(Earth(epoch), Uranus(epoch))
+    ra, dec, elon = constellation.geocentric_position()
 
     assert ra.ra_str(n_dec=1) == "19h 13' 48.7''", \
         "ERROR: 1st geocentric_position() test doesn't match"
@@ -111,7 +114,7 @@ def test_uranus_conjunction():
     """Tests the conjunction() method of Uranus class"""
 
     epoch = Epoch(1993, 10, 1.0)
-    conjunction = Uranus.conjunction(epoch)
+    conjunction = Uranus(epoch).conjunction()
     y, m, d = conjunction.get_date()
 
     assert abs(round(y, 0) - 1994) < TOL, \
@@ -128,7 +131,7 @@ def test_uranus_opposition():
     """Tests the opposition() method of Uranus class"""
 
     epoch = Epoch(1780, 12, 1.0)
-    oppo = Uranus.opposition(epoch)
+    oppo = Uranus(epoch).opposition()
     y, m, d = oppo.get_date()
 
     assert abs(round(y, 0) - 1780) < TOL, \
@@ -145,7 +148,7 @@ def test_uranus_perihelion_aphelion():
     """Tests the perihelion_aphelion() method of Uranus class"""
 
     epoch = Epoch(1960, 1, 1.0)
-    e = Uranus.perihelion_aphelion(epoch)
+    e = Uranus(epoch).perihelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 1966) < TOL, \
@@ -158,7 +161,7 @@ def test_uranus_perihelion_aphelion():
         "ERROR: 3rd perihelion_aphelion() test doesn't match"
 
     epoch = Epoch(2009, 1, 1.0)
-    e = Uranus.perihelion_aphelion(epoch, perihelion=False)
+    e = Uranus(epoch).aphelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 2009) < TOL, \
@@ -175,7 +178,7 @@ def test_uranus_passage_nodes():
     """Tests the passage_nodes() method of Uranus class"""
 
     epoch = Epoch(2019, 1, 1)
-    time, r = Uranus.passage_nodes(epoch)
+    time, r = Uranus(epoch).passage_nodes()
     y, m, d = time.get_date()
     d = round(d, 1)
     r = round(r, 4)

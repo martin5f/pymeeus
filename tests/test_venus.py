@@ -18,10 +18,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pymeeus.base import TOL
-from pymeeus.Venus import Venus
-from pymeeus.Epoch import Epoch
-from pymeeus.Angle import Angle
+from pymeeus_oo.calculation.base import TOL
+from pymeeus_oo.constellations.constellations import Constellation
+from pymeeus_oo.planets.earth import Earth
+from pymeeus_oo.planets.venus import Venus
+from pymeeus_oo.calculation.angle import Angle
+from pymeeus_oo.calculation.epoch import Epoch
 
 
 # Venus class
@@ -30,7 +32,7 @@ def test_venus_geometric_heliocentric_position():
     """Tests the geometric_heliocentric_position() method of Venus class"""
 
     epoch = Epoch(1992, 12, 20.0)
-    lon, lat, r = Venus.geometric_heliocentric_position(epoch, tofk5=False)
+    lon, lat, r = Venus(epoch).geometric_heliocentric_position(tofk5=False)
 
     assert abs(round(lon.to_positive(), 5) - 26.11412) < TOL, \
         "ERROR: 1st geometric_heliocentric_position() test doesn't match"
@@ -46,7 +48,7 @@ def test_venus_orbital_elements_mean_equinox():
     """Tests the orbital_elements_mean_equinox() method of Venus class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Venus.orbital_elements_mean_equinox(epoch)
+    l, a, e, i, ome, arg = Venus(epoch).orbital_elements_mean_equinox()
 
     assert abs(round(l, 6) - 338.646306) < TOL, \
         "ERROR: 1st orbital_elements_mean_equinox() test doesn't match"
@@ -71,7 +73,7 @@ def test_venus_orbital_elements_j2000():
     """Tests the orbital_elements_j2000() method of Venus class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Venus.orbital_elements_j2000(epoch)
+    l, a, e, i, ome, arg = Venus(epoch).orbital_elements_j2000()
 
     assert abs(round(l, 6) - 337.731227) < TOL, \
         "ERROR: 1st orbital_elements_j2000() test doesn't match"
@@ -96,7 +98,8 @@ def test_venus_geocentric_position():
     """Tests the geocentric_position() method of Venus class"""
 
     epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Venus.geocentric_position(epoch)
+    constellation = Constellation(Earth(epoch), Venus(epoch))
+    ra, dec, elon = constellation.geocentric_position()
 
     assert ra.ra_str(n_dec=1) == "21h 4' 41.5''", \
         "ERROR: 1st geocentric_position() test doesn't match"
@@ -112,7 +115,7 @@ def test_venus_inferior_conjunction():
     """Tests the inferior_conjunction() method of Venus class"""
 
     epoch = Epoch(1882, 12, 1.0)
-    conjunction = Venus.inferior_conjunction(epoch)
+    conjunction = Venus(epoch).inferior_conjunction()
     y, m, d = conjunction.get_date()
 
     assert abs(round(y, 0) - 1882) < TOL, \
@@ -129,7 +132,7 @@ def test_venus_superior_conjunction():
     """Tests the superior_conjunction() method of Venus class"""
 
     epoch = Epoch(1993, 10, 1.0)
-    conjunction = Venus.superior_conjunction(epoch)
+    conjunction = Venus(epoch).superior_conjunction()
     y, m, d = conjunction.get_date()
 
     assert abs(round(y, 0) - 1994) < TOL, \
@@ -146,7 +149,7 @@ def test_venus_western_elongation():
     """Tests the western_elongation() method of Venus class"""
 
     epoch = Epoch(2019, 1, 1.0)
-    time, elongation = Venus.western_elongation(epoch)
+    time, elongation = Venus(epoch).western_elongation()
     y, m, d = time.get_date()
 
     assert abs(round(y, 0) - 2019) < TOL, \
@@ -166,7 +169,7 @@ def test_venus_eastern_elongation():
     """Tests the eastern_elongation() method of Venus class"""
 
     epoch = Epoch(2019, 10, 1.0)
-    time, elongation = Venus.eastern_elongation(epoch)
+    time, elongation = Venus(epoch).eastern_elongation()
     y, m, d = time.get_date()
 
     assert abs(round(y, 0) - 2020) < TOL, \
@@ -186,7 +189,7 @@ def test_venus_station_longitude_1():
     """Tests the station_longitude_1() method of Venus class"""
 
     epoch = Epoch(2018, 12, 1.0)
-    sta1 = Venus.station_longitude_1(epoch)
+    sta1 = Venus(epoch).station_longitude_1()
     y, m, d = sta1.get_date()
 
     assert abs(round(y, 0) - 2018) < TOL, \
@@ -203,7 +206,7 @@ def test_venus_station_longitude_2():
     """Tests the station_longitude_2() method of Venus class"""
 
     epoch = Epoch(2018, 12, 1.0)
-    sta2 = Venus.station_longitude_2(epoch)
+    sta2 = Venus(epoch).station_longitude_2()
     y, m, d = sta2.get_date()
 
     assert abs(round(y, 0) - 2018) < TOL, \
@@ -220,7 +223,7 @@ def test_venus_perihelion_aphelion():
     """Tests the perihelion_aphelion() method of Venus class"""
 
     epoch = Epoch(1978, 10, 15.0)
-    e = Venus.perihelion_aphelion(epoch)
+    e = Venus(epoch).perihelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 1978) < TOL, \
@@ -236,7 +239,7 @@ def test_venus_perihelion_aphelion():
         "ERROR: 4th perihelion_aphelion() test doesn't match"
 
     epoch = Epoch(1979, 2, 1.0)
-    e = Venus.perihelion_aphelion(epoch, perihelion=False)
+    e = Venus(epoch).aphelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 1979) < TOL, \
@@ -256,7 +259,7 @@ def test_venus_passage_nodes():
     """Tests the passage_nodes() method of Venus class"""
 
     epoch = Epoch(1979, 1, 1)
-    time, r = Venus.passage_nodes(epoch)
+    time, r = Venus(epoch).passage_nodes()
     y, m, d = time.get_date()
     d = round(d, 1)
     r = round(r, 4)

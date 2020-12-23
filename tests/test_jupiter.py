@@ -18,9 +18,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pymeeus.base import TOL
-from pymeeus.Jupiter import Jupiter
-from pymeeus.Epoch import Epoch
+from pymeeus_oo.calculation.base import TOL
+from pymeeus_oo.constellations.constellations import Constellation
+from pymeeus_oo.planets.earth import Earth
+from pymeeus_oo.planets.jupiter import Jupiter
+from pymeeus_oo.calculation.epoch import Epoch
 
 
 # Jupiter class
@@ -29,7 +31,7 @@ def test_jupiter_geometric_heliocentric_position():
     """Tests the geometric_heliocentric_position() method of Jupiter class"""
 
     epoch = Epoch(2018, 10, 27.0)
-    lon, lat, r = Jupiter.geometric_heliocentric_position(epoch)
+    lon, lat, r = Jupiter(epoch).geometric_heliocentric_position()
 
     assert abs(round(lon.to_positive(), 4) - 241.5873) < TOL, \
         "ERROR: 1st geometric_heliocentric_position() test doesn't match"
@@ -45,7 +47,7 @@ def test_jupiter_orbital_elements_mean_equinox():
     """Tests the orbital_elements_mean_equinox() method of Jupiter class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Jupiter.orbital_elements_mean_equinox(epoch)
+    l, a, e, i, ome, arg = Jupiter(epoch).orbital_elements_mean_equinox()
 
     assert abs(round(l, 6) - 222.433723) < TOL, \
         "ERROR: 1st orbital_elements_mean_equinox() test doesn't match"
@@ -70,7 +72,7 @@ def test_jupiter_orbital_elements_j2000():
     """Tests the orbital_elements_j2000() method of Jupiter class"""
 
     epoch = Epoch(2065, 6, 24.0)
-    l, a, e, i, ome, arg = Jupiter.orbital_elements_j2000(epoch)
+    l, a, e, i, ome, arg = Jupiter(epoch).orbital_elements_j2000()
 
     assert abs(round(l, 6) - 221.518802) < TOL, \
         "ERROR: 1st orbital_elements_j2000() test doesn't match"
@@ -95,7 +97,8 @@ def test_jupiter_geocentric_position():
     """Tests the geocentric_position() method of Jupiter class"""
 
     epoch = Epoch(1992, 12, 20.0)
-    ra, dec, elon = Jupiter.geocentric_position(epoch)
+    constellation = Constellation(Earth(epoch), Jupiter(epoch))
+    ra, dec, elon = constellation.geocentric_position()
 
     assert ra.ra_str(n_dec=1) == "12h 47' 9.6''", \
         "ERROR: 1st geocentric_position() test doesn't match"
@@ -111,7 +114,7 @@ def test_jupiter_conjunction():
     """Tests the conjunction() method of Jupiter class"""
 
     epoch = Epoch(1993, 10, 1.0)
-    conjunction = Jupiter.conjunction(epoch)
+    conjunction = Jupiter(epoch).conjunction()
     y, m, d = conjunction.get_date()
 
     assert abs(round(y, 0) - 1993) < TOL, \
@@ -128,7 +131,7 @@ def test_jupiter_opposition():
     """Tests the opposition() method of Jupiter class"""
 
     epoch = Epoch(-6, 9, 1.0)
-    oppo = Jupiter.opposition(epoch)
+    oppo = Jupiter(epoch).opposition()
     y, m, d = oppo.get_date()
 
     assert abs(round(y, 0) - (-6)) < TOL, \
@@ -145,7 +148,7 @@ def test_jupiter_station_longitude_1():
     """Tests the station_longitude_1() method of Jupiter class"""
 
     epoch = Epoch(2018, 11, 1.0)
-    sta1 = Jupiter.station_longitude_1(epoch)
+    sta1 = Jupiter(epoch).station_longitude_1()
     y, m, d = sta1.get_date()
 
     assert abs(round(y, 0) - 2018) < TOL, \
@@ -162,7 +165,7 @@ def test_jupiter_station_longitude_2():
     """Tests the station_longitude_2() method of Jupiter class"""
 
     epoch = Epoch(2018, 11, 1.0)
-    sta2 = Jupiter.station_longitude_2(epoch)
+    sta2 = Jupiter(epoch).station_longitude_2()
     y, m, d = sta2.get_date()
 
     assert abs(round(y, 0) - 2018) < TOL, \
@@ -179,7 +182,7 @@ def test_jupiter_perihelion_aphelion():
     """Tests the perihelion_aphelion() method of Jupiter class"""
 
     epoch = Epoch(2019, 2, 23.0)
-    e = Jupiter.perihelion_aphelion(epoch)
+    e = Jupiter(epoch).perihelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 2023) < TOL, \
@@ -195,7 +198,7 @@ def test_jupiter_perihelion_aphelion():
         "ERROR: 4th perihelion_aphelion() test doesn't match"
 
     epoch = Epoch(1981, 6, 1.0)
-    e = Jupiter.perihelion_aphelion(epoch, perihelion=False)
+    e = Jupiter(epoch).aphelion()
     y, m, d, h, mi, s = e.get_full_date()
 
     assert abs(y - 1981) < TOL, \
@@ -215,7 +218,7 @@ def test_jupiter_passage_nodes():
     """Tests the passage_nodes() method of Jupiter class"""
 
     epoch = Epoch(2019, 1, 1)
-    time, r = Jupiter.passage_nodes(epoch)
+    time, r = Jupiter(epoch).passage_nodes()
     y, m, d = time.get_date()
     d = round(d, 1)
     r = round(r, 4)

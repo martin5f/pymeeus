@@ -18,9 +18,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pymeeus.base import TOL
-from pymeeus.Pluto import Pluto
-from pymeeus.Epoch import Epoch
+from pymeeus_oo.calculation.base import TOL
+from pymeeus_oo.constellations.constellations import Constellation
+from pymeeus_oo.planets.earth import Earth
+from pymeeus_oo.planets.pluto import Pluto
+from pymeeus_oo.calculation.epoch import Epoch
 
 
 # Pluto class
@@ -29,7 +31,7 @@ def test_pluto_geometric_heliocentric_position():
     """Tests the geometric_heliocentric_position() method of Pluto class"""
 
     epoch = Epoch(1992, 10, 13.0)
-    lon, lat, r = Pluto.geometric_heliocentric_position(epoch)
+    lon, lat, r = Pluto(epoch).geometric_heliocentric_position()
 
     assert abs(round(lon.to_positive(), 5) - 232.74071) < TOL, \
         "ERROR: 1st geometric_heliocentric_position() test doesn't match"

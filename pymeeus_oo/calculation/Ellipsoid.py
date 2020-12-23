@@ -1,6 +1,6 @@
 from math import sqrt, radians, sin, cos, tan, atan
 
-from pymeeus_oo.calculation.Angle import Angle
+from pymeeus_oo.calculation.angle import Angle
 
 
 class Ellipsoid(object):

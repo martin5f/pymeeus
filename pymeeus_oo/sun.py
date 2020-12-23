@@ -20,16 +20,15 @@
 
 from math import sin, cos, tan, atan, atan2, asin
 
-from pymeeus.Angle import Angle
-from pymeeus.Epoch import Epoch, JDE2000
-from pymeeus.Coordinates import (
+from pymeeus_oo.calculation.angle import Angle
+from pymeeus_oo.calculation.coordinates import (
     mean_obliquity,
     true_obliquity,
     nutation_longitude,
     ecliptical2equatorial,
 )
-from pymeeus.Earth import Earth
-
+from pymeeus_oo.calculation.epoch import Epoch, JDE2000
+from pymeeus_oo.planets.earth import Earth
 
 """
 .. module:: Sun
@@ -90,9 +89,9 @@ class Sun(object):
         e = 0.016708634 - t * (0.000042037 + t * 0.0000001267)
         # Equation of the center
         c = (
-            (1.914602 - t * (0.004817 + t * 0.000014)) * sin(mrad)
-            + (0.019993 - t * 0.000101) * sin(2.0 * mrad)
-            + 0.000289 * sin(3.0 * mrad)
+                (1.914602 - t * (0.004817 + t * 0.000014)) * sin(mrad)
+                + (0.019993 - t * 0.000101) * sin(2.0 * mrad)
+                + 0.000289 * sin(3.0 * mrad)
         )
         c = Angle(c)
         true_lon = l0 + c
@@ -220,7 +219,7 @@ class Sun(object):
         if not isinstance(epoch, Epoch) and not isinstance(tofk5, bool):
             raise TypeError("Invalid input types")
         # Use Earth heliocentric position to compute Sun's geocentric position
-        lon, lat, r = Earth.geometric_heliocentric_position(epoch, tofk5)
+        lon, lat, r = Earth(epoch).geometric_heliocentric_position(tofk5)
         lon = lon.to_positive() + 180.0
         lat = -lat
         return lon, lat, r
@@ -263,7 +262,8 @@ class Sun(object):
         if not isinstance(epoch, Epoch):
             raise TypeError("Invalid input type")
         # Use Earth heliocentric position to compute Sun's geocentric position
-        lon, lat, r = Earth.apparent_heliocentric_position(epoch, nutation)
+        lon, lat, r = Earth(epoch).apparent_heliocentric_position(nutation)
+        # lon, lat, r = Earth.apparent_heliocentric_position(epoch, nutation)
         lon = lon.to_positive() + 180.0
         lat = -lat
         return lon, lat, r
@@ -346,7 +346,7 @@ class Sun(object):
         if not isinstance(epoch, Epoch):
             raise TypeError("Invalid input type")
         # Second, compute Earth heliocentric position referred to J2000.0
-        lon, lat, r = Earth.geometric_heliocentric_position_j2000(epoch)
+        lon, lat, r = Earth(epoch).geometric_heliocentric_position_j2000()
         # Third, convert from Earth's heliocentric to Sun's geocentric
         lon = lon.to_positive() + 180.0
         lat = -lat
@@ -388,7 +388,7 @@ class Sun(object):
         if not isinstance(epoch, Epoch):
             raise TypeError("Invalid input type")
         # Second, compute Earth heliocentric position referred to J2000.0
-        lon, lat, r = Earth.geometric_heliocentric_position_j2000(epoch)
+        lon, lat, r = Earth(epoch).geometric_heliocentric_position_j2000()
         # Third, convert from Earth's heliocentric to Sun's geocentric
         lon = lon.to_positive() + 180.0
         lat = -lat
@@ -440,17 +440,17 @@ class Sun(object):
         tt = (epoch - equinox_epoch) / 36525.0
         # Compute the conversion parameters
         zeta = t * (
-            (2306.2181 + tt * (1.39656 - 0.000139 * tt))
-            + t * ((0.30188 - 0.000344 * tt) + 0.017998 * t)
+                (2306.2181 + tt * (1.39656 - 0.000139 * tt))
+                + t * ((0.30188 - 0.000344 * tt) + 0.017998 * t)
         )
         z = t * (
-            (2306.2181 + tt * (1.39656 - 0.000139 * tt))
-            + t * ((1.09468 + 0.000066 * tt) + 0.018203 * t)
+                (2306.2181 + tt * (1.39656 - 0.000139 * tt))
+                + t * ((1.09468 + 0.000066 * tt) + 0.018203 * t)
         )
         theta = t * (
-            2004.3109
-            + tt * (-0.85330 - 0.000217 * tt)
-            + t * (-(0.42665 + 0.000217 * tt) - 0.041833 * t)
+                2004.3109
+                + tt * (-0.85330 - 0.000217 * tt)
+                + t * (-(0.42665 + 0.000217 * tt) - 0.041833 * t)
         )
         # Redefine the former values as Angles, and compute them in radians
         zeta = Angle(0, 0, zeta)
@@ -503,10 +503,10 @@ class Sun(object):
             raise TypeError("Invalid input types")
         # Second, check that the target is correct
         if (
-            (target != "spring")
-            and (target != "summer")
-            and (target != "autumn")
-            and (target != "winter")
+                (target != "spring")
+                and (target != "summer")
+                and (target != "autumn")
+                and (target != "winter")
         ):
             raise ValueError("'target' value is invalid")
         # Now we can start computing an approximate value (Tables 27.A, 27.B)
@@ -514,34 +514,39 @@ class Sun(object):
             y = year / 1000.0
             if target == "spring":
                 jde0 = 1721139.29189 + y * (
-                    365242.1374 + y * (0.06134 + y * (0.00111 - y * 0.00071))
+                        365242.1374 + y * (
+                        0.06134 + y * (
+                        0.00111 - y * 0.00071))
                 )
             elif target == "summer":
                 jde0 = 1721233.25401 + y * (
-                    365241.72562 + y * (-0.05323 + y * (0.00907 + y * 0.00025))
+                        365241.72562 + y * (
+                        -0.05323 + y * (
+                        0.00907 + y * 0.00025))
                 )
             elif target == "autumn":
-                jde0 = (1721325.70455 +
-                        y * (365242.49558 +
-                             y * (-0.11677 + y * (-0.00297 + y * 0.00074))))
+                jde0 = (1721325.70455 + y * (
+                        365242.49558 + y * (
+                        -0.11677 + y * (
+                        -0.00297 + y * 0.00074))))
             elif target == "winter":
-                jde0 = (1721414.39987 +
-                        y * (363242.88257 + y * (-0.00769 +
-                                                 y * (-0.00933 -
-                                                      y * 0.00006))))
+                jde0 = (1721414.39987 + y * (
+                        363242.88257 + y * (
+                        -0.00769 + y * (
+                        -0.00933 - y * 0.00006))))
         elif (year >= 1000) and (year <= 3000):
             y = (year - 2000.0) / 1000.0
             if target == "spring":
                 jde0 = 2451623.80984 + y * (
-                    365242.37404 + y * (0.05169 + y * (-0.00411 - y * 0.00057))
+                        365242.37404 + y * (0.05169 + y * (-0.00411 - y * 0.00057))
                 )
             elif target == "summer":
                 jde0 = 2451716.56767 + y * (
-                    365241.62603 + y * (0.00325 + y * (0.00888 - y * 0.0003))
+                        365241.62603 + y * (0.00325 + y * (0.00888 - y * 0.0003))
                 )
             elif target == "autumn":
                 jde0 = 2451810.21715 + y * (
-                    365242.01767 + y * (-0.11575 + y * (0.00337 + y * 0.00078))
+                        365242.01767 + y * (-0.11575 + y * (0.00337 + y * 0.00078))
                 )
             elif target == "winter":
                 jde0 = (2451900.05952 +
@@ -562,7 +567,7 @@ class Sun(object):
         return epoch
 
     @staticmethod
-    def equation_of_time(epoch):
+    def equation_of_time(epoch: Epoch):
         """This method computes the equation of time for a given epoch,
         understood as the difference between apparent and mean time, or the
         difference between the hour angle of the true Sun and the mean Sun.
@@ -665,7 +670,7 @@ class Sun(object):
         return p, b0, l0.to_positive()
 
     @staticmethod
-    def beginning_synodic_rotation(number):
+    def beginning_synodic_rotation(number) -> Epoch:
         """This method calculates the epoch when the Carrington's synodic
         rotation No. 'number' starts.
 
@@ -685,9 +690,9 @@ class Sun(object):
         if not isinstance(number, int):
             raise TypeError("Invalid input type")
         # Apply formula (29.1)
-        jde = 2398140.227 + 27.2752316*number
+        jde = 2398140.227 + 27.2752316 * number
         # Now, find the correction using formula (29.2)
-        m = 281.96 + 26.882476*number
+        m = 281.96 + 26.882476 * number
         m = Angle(m)
         m = m.rad()
         delta = 0.1454 * sin(m) - 0.0085 * sin(2.0 * m) - 0.0141 * cos(2.0 * m)
@@ -697,7 +702,6 @@ class Sun(object):
 
 
 def main():
-
     # Let's define a small helper function
     def print_me(msg, val):
         print("{}: {}".format(msg, val))
@@ -821,18 +825,17 @@ def main():
     epoch = Epoch(1992, 10, 13)
     p, b0, l0 = Sun.ephemeris_physical_observations(epoch)
     print("Ephemeris of physical observations of the Sun:")
-    print_me("P ", round(p, 2))     # 26.27
-    print_me("B0", round(b0, 2))    # 5.99
-    print_me("L0", round(l0, 2))    # 238.63
+    print_me("P ", round(p, 2))  # 26.27
+    print_me("B0", round(b0, 2))  # 5.99
+    print_me("L0", round(l0, 2))  # 238.63
 
     print("")
 
     # Get the epoch when the Carrington's synodic rotation No. 'number' starts
     epoch = Sun.beginning_synodic_rotation(1699)
     print_me("Epoch for Carrington's synodic rotation No. 1699",
-             round(epoch(), 3))     # 2444480.723
+             round(epoch(), 3))  # 2444480.723
 
 
 if __name__ == "__main__":
-
     main()
