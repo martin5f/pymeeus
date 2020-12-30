@@ -123,7 +123,7 @@ class Ellipsoid(object):
         :rtype: float
         :raises: TypeError if input value is of wrong type.
 
-        >>> e = Earth(ellipsoid=IAU76)
+        >>> e = IAU76
         >>> round(e.rho(0.0), 1)
         1.0
         """
@@ -152,7 +152,7 @@ class Ellipsoid(object):
         :raises: TypeError if input value is of wrong type.
 
         >>> lat = Angle(33, 21, 22.0)
-        >>> e = Earth(ellipsoid=IAU76)
+        >>> e = IAU76
         >>> round(e.rho_sinphi(lat, 1706), 6)
         0.546861
         """
@@ -185,7 +185,7 @@ class Ellipsoid(object):
         :raises: TypeError if input value is of wrong type.
 
         >>> lat = Angle(33, 21, 22.0)
-        >>> e = Earth(ellipsoid=IAU76)
+        >>> e = IAU76
         >>> round(e.rho_cosphi(lat, 1706), 6)
         0.836339
         """
@@ -215,7 +215,7 @@ class Ellipsoid(object):
         :rtype: float
         :raises: TypeError if input value is of wrong type.
 
-        >>> e = Earth(ellipsoid=IAU76)
+        >>> e = IAU76
         >>> round(e.rp(42.0), 1)
         4747001.2
         """
@@ -242,7 +242,7 @@ class Ellipsoid(object):
         :rtype: float
         :raises: TypeError if input value is of wrong type.
 
-        >>> e = Earth(ellipsoid=IAU76)
+        >>> e = IAU76
         >>> round(e.linear_velocity(42.0), 2)
         346.16
         """
@@ -265,7 +265,7 @@ class Ellipsoid(object):
         :rtype: float
         :raises: TypeError if input value is of wrong type.
 
-        >>> e = Earth(ellipsoid=IAU76)
+        >>> e = IAU76
         >>> round(e.rm(42.0), 1)
         6364033.3
         """
@@ -303,7 +303,7 @@ class Ellipsoid(object):
         :rtype: tuple
         :raises: TypeError if input values are of wrong type.
 
-        >>> e = Earth(ellipsoid=IAU76)
+        >>> e = IAU76
         >>> lon1 = Angle(-2, 20, 14.0)
         >>> lat1 = Angle(48, 50, 11.0)
         >>> lon2 = Angle(77, 3, 56.0)

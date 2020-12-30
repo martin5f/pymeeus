@@ -46,16 +46,12 @@ class Jupiter(Planet):
         """This method computes the time of the conjunction closest to the
         given epoch.
 
-        :param epoch: Epoch close to the desired conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the conjunction happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 10, 1.0)
-        >>> conj = Jupiter.conjunction(epoch)
+        >>> conj = Jupiter(epoch).conjunction()
         >>> y, m, d = conj.get_date()
         >>> print(y)
         1993
@@ -99,16 +95,12 @@ class Jupiter(Planet):
         """This method computes the time of the opposition closest to the given
         epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the opposition happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(-6, 9, 1.0)
-        >>> oppo = Jupiter.opposition(epoch)
+        >>> oppo = Jupiter(epoch).opposition()
         >>> y, m, d = oppo.get_date()
         >>> print(y)
         -6
@@ -153,16 +145,12 @@ class Jupiter(Planet):
         (i.e. when the planet is stationary and begins to move westward -
         retrograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 1st station in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2018, 11, 1.0)
-        >>> sta1 = Jupiter.station_longitude_1(epoch)
+        >>> sta1 = Jupiter(epoch).station_longitude_1()
         >>> y, m, d = sta1.get_date()
         >>> print(y)
         2018
@@ -207,16 +195,12 @@ class Jupiter(Planet):
         (i.e. when the planet is stationary and begins to move eastward -
         prograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 1st station in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2018, 11, 1.0)
-        >>> sta2 = Jupiter.station_longitude_2(epoch)
+        >>> sta2 = Jupiter(epoch).station_longitude_2()
         >>> y, m, d = sta2.get_date()
         >>> print(y)
         2018
@@ -257,32 +241,14 @@ class Jupiter(Planet):
         return Epoch(to_return)
 
     def aphelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Aphelion closer to
         a given epoch.
 
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
-
-        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :returns: The epoch of the desired Aphelion
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
-        >>> epoch = Epoch(2019, 2, 23.0)
-        >>> e = Jupiter.perihelion_aphelion(epoch)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        2023
-        >>> print(m)
-        1
-        >>> print(d)
-        20
-        >>> print(h)
-        11
         >>> epoch = Epoch(1981, 6, 1.0)
-        >>> e = Jupiter.perihelion_aphelion(epoch, perihelion=False)
+        >>> e = Jupiter(epoch).aphelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         1981
@@ -304,21 +270,14 @@ class Jupiter(Planet):
         return Epoch(sol)
 
     def perihelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Perihelion closer to
         a given epoch.
-
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
 
         :returns: The epoch of the desired Perihelion (or Aphelion)
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
         >>> epoch = Epoch(2019, 2, 23.0)
-        >>> e = Jupiter.perihelion_aphelion(epoch)
+        >>> e = Jupiter(epoch).perihelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         2023
@@ -328,17 +287,6 @@ class Jupiter(Planet):
         20
         >>> print(h)
         11
-        >>> epoch = Epoch(1981, 6, 1.0)
-        >>> e = Jupiter.perihelion_aphelion(epoch, perihelion=False)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        1981
-        >>> print(m)
-        7
-        >>> print(d)
-        28
-        >>> print(h)
-        6
         """
 
         # First approximation

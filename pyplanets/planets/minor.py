@@ -40,7 +40,7 @@ class Minor(object):
     Class Minor models minor celestial bodies.
     """
 
-    def __init__(self, q, e, i, omega, w, t):
+    def __init__(self, q: float, e: float, i: Angle, omega: Angle, w: Angle, t: Epoch):
         """Minor constructor.
 
         The Minor object is initialized with this constructor, setting the
@@ -59,38 +59,8 @@ class Minor(object):
         :type w: :py:class:`Angle`
         :param t: Epoch of passage by perihelion, as an Epoch object
         :type t: :py:class:`Epoch`
-
-        :raises: TypeError if input value is of wrong type.
         """
 
-        self._tol = TOL
-        self.set(q, e, i, omega, w, t)
-
-    def set(self, q, e, i, omega, w, t):
-        """Method used to set the orbital values and set some internal
-        parameters.
-
-        :param q: Perihelion distance, in Astronomical Units
-        :type q: float
-        :param e: Eccentricity of the orbit
-        :type e: float
-        :param i: Inclination of the orbit, as an Angle object
-        :type i: :py:class:`Angle`
-        :param omega: Longitude of the ascending node, as an Angle object
-        :type omega: :py:class:`Angle`
-        :param w: Argument of the perihelion, as an Angle object
-        :type w: :py:class:`Angle`
-        :param t: Epoch of passage by perihelion, as an Epoch object
-        :type t: :py:class:`Epoch`
-
-        :raises: TypeError if input value is of wrong type.
-        """
-
-        # First check that input value is of correct types
-        if not (isinstance(t, Epoch) and isinstance(q, float) and
-                isinstance(e, float) and isinstance(i, Angle) and
-                isinstance(omega, Angle) and isinstance(w, Angle)):
-            raise TypeError("Invalid input types")
         # Compute auxiliary quantities
         se = 0.397777156
         ce = 0.917482062
@@ -109,7 +79,7 @@ class Minor(object):
         self._bm = sqrt(g * g + qq * qq)
         self._cm = sqrt(h * h + r * r)
         # Store some orbital parameters
-        if abs(e - 1.0) > self._tol:
+        if abs(e - 1.0) > TOL:
             self._a = abs(q / (1.0 - e))
         else:
             self._a = q
@@ -121,9 +91,8 @@ class Minor(object):
         self._t = t
         # Compute the mean motion from the semi-major axis (degrees/day)
         self._n = 0.9856076686 / (self._a * sqrt(self._a))
-        return
 
-    def _near_parabolic(self, t):
+    def _near_parabolic(self, t) -> (Angle, float):
         """This internal function handles the computation of the true anomaly
         and the radius vector when the eccentricity is close to 1.
 
@@ -133,8 +102,6 @@ class Minor(object):
         :returns: A tuple containing the true anomaly (as an Angle object) and
             the radius vector (in Astronomical Units).
         :rtype: tuple
-        :raises: TypeError if input value is of wrong type, and ValueError if
-            convergence is not possible
 
         >>> q = 0.5871018
         >>> e = 0.9672746
@@ -160,14 +127,11 @@ class Minor(object):
         10.668551
         """
 
-        # First check that input value is of correct types
-        if not isinstance(t, float):
-            raise TypeError("Invalid input type")
         # Let's start defining some constants and renaming some parameters
         k = 0.01720209895
         d1 = 10000
         c = 1.0 / 3.0
-        d = self._tol
+        d = TOL
         q = self._q
         e = self._e
         q1 = k * sqrt((1.0 + e) / q) / (2.0 * q)
@@ -218,7 +182,7 @@ class Minor(object):
             v = Angle(0.0)
             return v, rr
 
-    def geocentric_position(self, epoch):
+    def geocentric_position(self, epoch) -> (Angle, Angle, Angle):
         """This method computes the geocentric position of a minor celestial
         body (right ascension and declination) for the given epoch, and
         referred to the standard equinox J2000.0. Additionally, it also
@@ -230,7 +194,6 @@ class Minor(object):
         :returns: A tuple containing the right ascension, the declination and
             the elongation angle to the Sun, as Angle objects
         :rtype: tuple
-        :raises: TypeError if input value is of wrong type.
 
         >>> a = 2.2091404
         >>> e = 0.8502196
@@ -265,9 +228,6 @@ class Minor(object):
         45.73
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Get internal parameters
         aa, bb, cc = self._aa, self._bb, self._cc
         am, bm, cm = self._am, self._bm, self._cm
@@ -290,7 +250,7 @@ class Minor(object):
             # Get r
             er = ee.rad()
             rr = a * (1.0 - e * cos(er))
-        elif abs(e - 1.0) < self._tol:
+        elif abs(e - 1.0) < TOL:
             # Parabolic case
             q = self._q
             ww = (0.03649116245 * (epoch - self._t)) / (q * sqrt(q))
@@ -298,7 +258,7 @@ class Minor(object):
             iterate = True
             while iterate:
                 s = (2.0 * sp * sp * sp + ww) / (3.0 * (sp * sp + 1.0))
-                iterate = abs(s - sp) > self._tol
+                iterate = abs(s - sp) > TOL
                 sp = s
             v = 2.0 * atan(s)
             v = Angle(v, radians=True)
@@ -333,7 +293,7 @@ class Minor(object):
             # Get r
             er = ee.rad()
             rr = a * (1.0 - e * cos(er))
-        elif abs(e - 1.0) < self._tol:
+        elif abs(e - 1.0) < TOL:
             # Parabolic case
             q = self._q
             ww = (0.03649116245 * (epoch - self._t)) / (q * sqrt(q))
@@ -341,7 +301,7 @@ class Minor(object):
             iterate = True
             while iterate:
                 s = (2.0 * sp * sp * sp + ww) / (3.0 * (sp * sp + 1.0))
-                iterate = abs(s - sp) > self._tol
+                iterate = abs(s - sp) > TOL
                 sp = s
             v = 2.0 * atan(s)
             v = Angle(v, radians=True)
@@ -365,7 +325,7 @@ class Minor(object):
         psi = Angle(psi, radians=True)
         return ra, dec, psi
 
-    def heliocentric_ecliptical_position(self, epoch):
+    def heliocentric_ecliptical_position(self, epoch) -> (Angle, Angle):
         """This method computes the heliocentric position of a minor celestial
         body, providing the result in ecliptical coordinates.
 
@@ -374,7 +334,6 @@ class Minor(object):
 
         :returns: A tuple containing longitude and latitude, as Angle objects
         :rtype: tuple
-        :raises: TypeError if input value is of wrong type.
 
         >>> a = 2.2091404
         >>> e = 0.8502196
@@ -392,9 +351,6 @@ class Minor(object):
         11d 56' 14.4''
         """
 
-        # First check that input value is of correct types
-        if not isinstance(epoch, Epoch):
-            raise TypeError("Invalid input type")
         # Get the mean motion and other orbital parameters
         n = self._n
         a = self._a

@@ -46,7 +46,7 @@ def main():
 
     # Compute the geocentric position for 1992/10/13:
     epoch = Epoch(1992, 10, 13.0)
-    ra, dec = Pluto.geocentric_position(epoch)
+    ra, dec = Pluto(epoch).geocentric_position()
     print_me("Right ascension", ra.ra_str(n_dec=1))
     print_me("Declination", dec.dms_str(n_dec=1))
 
@@ -55,6 +55,7 @@ def main():
     print_me("Right ascension", ra.ra_str(n_dec=1))
     print_me("Declination", dec.dms_str(n_dec=1))
     print_me("Elongation", elon.dms_str(n_dec=1))
+
 
 if __name__ == "__main__":
     main()

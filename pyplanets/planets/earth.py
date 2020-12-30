@@ -59,7 +59,6 @@ class Earth(Planet):
         used is the WGS84 by default.
 
         :param ellipsoid: Reference ellipsoid to be used. WGS84 by default.
-        :type radians: :class:`pymeeus_oo.Ellipsoid.Ellipsoid`
 
         :returns: Earth object.
         :rtype: :py:class:`Earth`
@@ -78,7 +77,7 @@ class Earth(Planet):
            of the current reference ellipsoid, as a string.
         :rtype: string
 
-        >>> e = Earth()
+        >>> e = Earth(Epoch(2020, 12, 30))
         >>> s = str(e)
         >>> v = s.split(':')
         >>> print(v[0] + '|' + str(round(float(v[1]), 14)) + '|' + v[2] )
@@ -109,8 +108,6 @@ class Earth(Planet):
         Earth for a given epoch, using the VSOP87 theory, referred to the
         equinox J2000.0.
 
-        :param epoch: Epoch to compute Earth position, as an Epoch object
-        :type epoch: :py:class:`Epoch`
         :param tofk5: Whether or not the small correction to convert to the FK5
             system will be applied or not
         :type tofk5: bool
@@ -119,7 +116,6 @@ class Earth(Planet):
             :py:class:`Angle` objects), and the radius vector (as a float,
             in astronomical units), in that order
         :rtype: tuple
-        :raises: TypeError if input values are of wrong type.
         """
 
         return geometric_vsop_pos(
@@ -127,32 +123,14 @@ class Earth(Planet):
         )
 
     def aphelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Aphelion closer to
         a given epoch.
 
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
-
-        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :returns: The epoch of the desired Aphelion
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
-        >>> epoch = Epoch(1989, 11, 20.0)
-        >>> e = Earth.perihelion_aphelion(epoch)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        1990
-        >>> print(m)
-        1
-        >>> print(d)
-        4
-        >>> print(h)
-        17
         >>> epoch = Epoch(2000, 4, 1.0)
-        >>> e = Earth.perihelion_aphelion(epoch, perihelion=False)
+        >>> e = Earth(epoch).aphelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         2000
@@ -164,21 +142,8 @@ class Earth(Planet):
         23
         >>> print(mi)
         51
-        >>> epoch = Epoch(2003, 3, 10.0)
-        >>> e = Earth.perihelion_aphelion(epoch)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        2003
-        >>> print(m)
-        1
-        >>> print(d)
-        4
-        >>> print(h)
-        5
-        >>> print(mi)
-        1
         >>> epoch = Epoch(2009, 5, 1.0)
-        >>> e = Earth.perihelion_aphelion(epoch, perihelion=False)
+        >>> e = Earth(epoch).aphelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         2009
@@ -201,21 +166,14 @@ class Earth(Planet):
         return Epoch(self._interpolate_jde(jde, delta=0.5))
 
     def perihelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Perihelion closer to
         a given epoch.
 
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
-
-        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :returns: The epoch of the desired Perihelion
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
         >>> epoch = Epoch(1989, 11, 20.0)
-        >>> e = Earth.perihelion_aphelion(epoch)
+        >>> e = Earth(epoch).perihelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         1990
@@ -225,21 +183,8 @@ class Earth(Planet):
         4
         >>> print(h)
         17
-        >>> epoch = Epoch(2000, 4, 1.0)
-        >>> e = Earth.perihelion_aphelion(epoch, perihelion=False)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        2000
-        >>> print(m)
-        7
-        >>> print(d)
-        3
-        >>> print(h)
-        23
-        >>> print(mi)
-        51
         >>> epoch = Epoch(2003, 3, 10.0)
-        >>> e = Earth.perihelion_aphelion(epoch)
+        >>> e = Earth(epoch).perihelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         2003
@@ -251,19 +196,6 @@ class Earth(Planet):
         5
         >>> print(mi)
         1
-        >>> epoch = Epoch(2009, 5, 1.0)
-        >>> e = Earth.perihelion_aphelion(epoch, perihelion=False)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        2009
-        >>> print(m)
-        7
-        >>> print(d)
-        4
-        >>> print(h)
-        1
-        >>> print(mi)
-        41
         """
 
         # First approximation
@@ -323,13 +255,12 @@ class Earth(Planet):
         :param hour_angle: Geocentric hour angle of the celestial object, as an
             :py:class:`Angle`
         :type hour_angle: :py:class:`Angle`
-        :param heigth: Height of observation point above sea level, in meters
+        :param height: Height of observation point above sea level, in meters
         :type height: float
 
         :returns: Tuple containing the topocentric right ascension and
             declination
         :rtype: tuple
-        :raises: TypeError if input values are of wrong type.
 
         >>> right_ascension = Angle(22, 38, 7.25, ra=True)
         >>> declination = Angle(-15, 46, 15.9)
@@ -368,7 +299,7 @@ class Earth(Planet):
     @staticmethod
     def parallax_ecliptical(longitude: Angle, latitude: Angle, semidiameter: Angle, obs_lat: Angle,
                             obliquity: Angle, sidereal_time: Angle, distance: float, height: float = 0.0) -> (
-    Angle, Angle, Angle):
+            Angle, Angle, Angle):
         """This function computes the topocentric coordinates of a celestial
         body (Moon or planet) directly from its geocentric values in ecliptical
         coordinates.
@@ -389,13 +320,12 @@ class Earth(Planet):
         :param distance: Distance from the celestial object to the Earth, in
             Astronomical Units
         :type distance: float
-        :param heigth: Height of observation point above sea level, in meters
+        :param height: Height of observation point above sea level, in meters
         :type height: float
 
         :returns: Tuple containing the topocentric longitude, latitude and
             semidiameter
         :rtype: tuple
-        :raises: TypeError if input values are of wrong type.
 
         >>> longitude = Angle(181, 46, 22.5)
         >>> latitude = Angle(2, 17, 26.2)

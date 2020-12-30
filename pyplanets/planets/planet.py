@@ -26,8 +26,8 @@ from pyplanets.core.epoch import Epoch
 from pyplanets.core.interpolation import Interpolation
 
 """
-.. module:: Mars
-   :synopsis: Class to model Mars planet
+.. module:: Planet
+   :synopsis: Abstract base class for planets
    :license: GNU Lesser General Public License v3 (LGPLv3)
 
 .. moduleauthor:: Martin Fünffinger
@@ -161,10 +161,8 @@ class Planet(ABC):
 
     def passage_nodes(self, ascending=True) -> (Epoch, float):
         """This function computes the time of passage by the nodes (ascending
-        or descending) of Mars, nearest to the given epoch.
+        or descending) of the planet, nearest to the given epoch.
 
-        :param epoch: Epoch closest to the node passage
-        :type epoch: :py:class:`Epoch`
         :param ascending: Whether the time of passage by the ascending (True)
             or descending (False) node will be computed
         :type ascending: bool
@@ -173,7 +171,6 @@ class Planet(ABC):
             - Time of passage through the node (:py:class:`Epoch`)
             - Radius vector when passing through the node (in AU, float)
         :rtype: tuple
-        :raises: TypeError if input values are of wrong type.
         """
 
         # Get the orbital parameters
@@ -189,7 +186,7 @@ class Planet(ABC):
         Used by perihelion() / aphelion() - methods
 
         :returns: The epoch of the desired Minimum / Maximum
-        :rtype: :py:class:`Epoch`
+        :rtype: float
         """
 
         t_b = (jde - delta - 2451545.0) / 365250.0

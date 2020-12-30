@@ -45,7 +45,7 @@ def test_pluto_geocentric_position():
     """Tests the geocentric_position() method of Pluto class"""
 
     epoch = Epoch(1992, 10, 13.0)
-    ra, dec = Pluto.geocentric_position(epoch)
+    ra, dec = Pluto(epoch).geocentric_position()
 
     assert ra.ra_str(n_dec=1) == "15h 31' 43.7''", \
         "ERROR: 1st geocentric_position() test doesn't match"
