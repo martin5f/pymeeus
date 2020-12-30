@@ -79,3 +79,4 @@ target/
 # Spyder project settings
 .spyderproject
 .spyproject
+.idea/
