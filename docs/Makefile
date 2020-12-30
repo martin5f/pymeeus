@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
-SPHINXPROJ    = PyMeeus
+SPHINXPROJ    = PyPlanets
 SOURCEDIR     = source
 BUILDDIR      = build
 
