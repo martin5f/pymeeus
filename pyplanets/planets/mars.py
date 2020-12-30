@@ -46,16 +46,12 @@ class Mars(Planet):
         """This method computes the time of the conjunction closest to the
         given epoch.
 
-        :param epoch: Epoch close to the desired conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the conjunction happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 10, 1.0)
-        >>> conj = Mars.conjunction(epoch)
+        >>> conj = Mars(epoch).conjunction()
         >>> y, m, d = conj.get_date()
         >>> print(y)
         1993
@@ -98,16 +94,12 @@ class Mars(Planet):
         """This method computes the time of the opposition closest to the given
         epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the opposition happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2729, 10, 1.0)
-        >>> oppo = Mars.opposition(epoch)
+        >>> oppo = Mars(epoch).opposition()
         >>> y, m, d = oppo.get_date()
         >>> print(y)
         2729
@@ -151,12 +143,8 @@ class Mars(Planet):
         (i.e. when the planet is stationary and begins to move westward -
         retrograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 1st station in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
         """
 
@@ -194,12 +182,8 @@ class Mars(Planet):
         (i.e. when the planet is stationary and begins to move eastward -
         prograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 2nd station in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
         """
 
@@ -233,18 +217,23 @@ class Mars(Planet):
         return Epoch(to_return)
 
     def aphelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Aphelion closer to
         a given epoch.
 
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
-
-        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :returns: The epoch of the desired Aphelion
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
+
+        >>> epoch = Epoch(2032, 1, 1.0)
+        >>> e = Mars(epoch).aphelion()
+        >>> y, m, d, h, mi, s = e.get_full_date()
+        >>> print(y)
+        2032
+        >>> print(m)
+        10
+        >>> print(d)
+        24
+        >>> print(h)
+        22
         """
 
         # First approximation
@@ -259,15 +248,20 @@ class Mars(Planet):
         """This method computes the time of Perihelion (or Aphelion) closer to
         a given epoch.
 
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
-
         :returns: The epoch of the desired Perihelion (or Aphelion)
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
+
+        >>> epoch = Epoch(2019, 2, 23.0)
+        >>> e = Mars(epoch).perihelion()
+        >>> y, m, d, h, mi, s = e.get_full_date()
+        >>> print(y)
+        2018
+        >>> print(m)
+        9
+        >>> print(d)
+        16
+        >>> print(h)
+        12
         """
 
         # First approximation
@@ -290,7 +284,6 @@ class Mars(Planet):
 
         :returns: Mars' magnitude
         :rtype: float
-        :raises: TypeError if input values are of wrong type.
         """
 
         # TODO: Method 'magnitude' only makes sense in the context of a 'Constellation"

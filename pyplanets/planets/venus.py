@@ -46,16 +46,12 @@ class Venus(Planet):
         """This method computes the time of the inferior conjunction closest to
         the given epoch.
 
-        :param epoch: Epoch close to the desired inferior conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the inferior conjunction happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1882, 12, 1.0)
-        >>> conjunction = Venus.inferior_conjunction(epoch)
+        >>> conjunction = Venus(epoch).inferior_conjunction()
         >>> y, m, d = conjunction.get_date()
         >>> print(y)
         1882
@@ -94,16 +90,12 @@ class Venus(Planet):
         """This method computes the time of the superior conjunction closest to
         the given epoch.
 
-        :param epoch: Epoch close to the desired superior conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the superior conjunction happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 10, 1.0)
-        >>> conjunction = Venus.superior_conjunction(epoch)
+        >>> conjunction = Venus(epoch).superior_conjunction()
         >>> y, m, d = conjunction.get_date()
         >>> print(y)
         1994
@@ -138,21 +130,17 @@ class Venus(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    def western_elongation(self) -> Epoch:
+    def western_elongation(self) -> (Epoch, Angle):
         """This method computes the time of the western elongation closest to
         the given epoch, as well as the corresponding maximum elongation angle.
-
-        :param epoch: Epoch close to the desired western elongation
-        :type epoch: :py:class:`Epoch`
 
         :returns: A tuple with the time when the western elongation happens, as
             an Epoch, and the maximum elongation angle, as an Angle
         :rtype: tuple
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2019, 1, 1.0)
-        >>> time, elongation = Venus.western_elongation(epoch)
+        >>> time, elongation = Venus(epoch).western_elongation()
         >>> y, m, d = time.get_date()
         >>> print(y)
         2019
@@ -195,21 +183,17 @@ class Venus(Planet):
         to_return = jde0 + corr
         return Epoch(to_return), elon
 
-    def eastern_elongation(self) -> Epoch:
+    def eastern_elongation(self) -> (Epoch, Angle):
         """This method computes the time of the eastern elongation closest to
         the given epoch, as well as the corresponding maximum elongation angle.
-
-        :param epoch: Epoch close to the desired eastern elongation
-        :type epoch: :py:class:`Epoch`
 
         :returns: A tuple with the time when the eastern elongation happens, as
             an Epoch, and the maximum elongation angle, as an Angle
         :rtype: tuple
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2019, 10, 1.0)
-        >>> time, elongation = Venus.eastern_elongation(epoch)
+        >>> time, elongation = Venus(epoch).eastern_elongation()
         >>> y, m, d = time.get_date()
         >>> print(y)
         2020
@@ -257,16 +241,12 @@ class Venus(Planet):
         (i.e. when the planet is stationary and begins to move westward -
         retrograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired inferior conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 1st station in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2018, 12, 1.0)
-        >>> sta1 = Venus.station_longitude_1(epoch)
+        >>> sta1 = Venus(epoch).station_longitude_1()
         >>> y, m, d = sta1.get_date()
         >>> print(y)
         2018
@@ -306,16 +286,12 @@ class Venus(Planet):
         (i.e. when the planet is stationary and begins to move eastward -
         prograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired inferior conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 2nd station in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2018, 12, 1.0)
-        >>> sta2 = Venus.station_longitude_2(epoch)
+        >>> sta2 = Venus(epoch).station_longitude_2()
         >>> y, m, d = sta2.get_date()
         >>> print(y)
         2018
@@ -351,32 +327,14 @@ class Venus(Planet):
         return Epoch(to_return)
 
     def aphelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Aphelion closer to
         a given epoch.
 
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
-
-        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :returns: The epoch of the desired Aphelion
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
-        >>> epoch = Epoch(1978, 10, 15.0)
-        >>> e = Venus.perihelion_aphelion(epoch)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        1978
-        >>> print(m)
-        12
-        >>> print(d)
-        31
-        >>> print(h)
-        4
         >>> epoch = Epoch(1979, 2, 1.0)
-        >>> e = Venus.perihelion_aphelion(epoch, perihelion=False)
+        >>> e = Venus(epoch).aphelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         1979
@@ -397,21 +355,14 @@ class Venus(Planet):
         return Epoch(sol)
 
     def perihelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Perihelion closer to
         a given epoch.
 
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
-
-        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :returns: The epoch of the desired Perihelion
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
         >>> epoch = Epoch(1978, 10, 15.0)
-        >>> e = Venus.perihelion_aphelion(epoch)
+        >>> e = Venus(epoch).perihelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         1978
@@ -421,17 +372,6 @@ class Venus(Planet):
         31
         >>> print(h)
         4
-        >>> epoch = Epoch(1979, 2, 1.0)
-        >>> e = Venus.perihelion_aphelion(epoch, perihelion=False)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        1979
-        >>> print(m)
-        4
-        >>> print(d)
-        22
-        >>> print(h)
-        12
         """
 
         # First approximation

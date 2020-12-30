@@ -46,16 +46,13 @@ class Saturn(Planet):
         """This method computes the time of the conjunction closest to the
         given epoch.
 
-        :param epoch: Epoch close to the desired conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the conjunction happens, as an Epoch
         :rtype: :py:class:`Epoch`
         :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2125, 6, 1.0)
-        >>> conj = Saturn.conjunction(epoch)
+        >>> conj = Saturn(epoch).conjunction()
         >>> y, m, d = conj.get_date()
         >>> print(y)
         2125
@@ -112,16 +109,12 @@ class Saturn(Planet):
         """This method computes the time of the opposition closest to the given
         epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the opposition happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(-6, 9, 1.0)
-        >>> oppo = Saturn.opposition(epoch)
+        >>> oppo = Saturn(epoch).opposition()
         >>> y, m, d = oppo.get_date()
         >>> print(y)
         -6
@@ -179,16 +172,12 @@ class Saturn(Planet):
         (i.e. when the planet is stationary and begins to move westward -
         retrograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 1st station in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2018, 11, 1.0)
-        >>> sta1 = Saturn.station_longitude_1(epoch)
+        >>> sta1 = Saturn(epoch).station_longitude_1()
         >>> y, m, d = sta1.get_date()
         >>> print(y)
         2018
@@ -246,16 +235,12 @@ class Saturn(Planet):
         (i.e. when the planet is stationary and begins to move eastward -
         prograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 2nd station in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(2018, 11, 1.0)
-        >>> sta2 = Saturn.station_longitude_2(epoch)
+        >>> sta2 = Saturn(epoch).station_longitude_2()
         >>> y, m, d = sta2.get_date()
         >>> print(y)
         2018
@@ -309,32 +294,14 @@ class Saturn(Planet):
         return Epoch(to_return)
 
     def aphelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Aphelion closer to
         a given epoch.
 
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
-
-        :returns: The epoch of the desired Perihelion (or Aphelion)
+        :returns: The epoch of the desired Aphelion
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
-        >>> epoch = Epoch(1944, 1, 1.0)
-        >>> e = Saturn.perihelion_aphelion(epoch)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        1944
-        >>> print(m)
-        9
-        >>> print(d)
-        8
-        >>> print(h)
-        1
         >>> epoch = Epoch(2047, 1, 1.0)
-        >>> e = Saturn.perihelion_aphelion(epoch, perihelion=False)
+        >>> e = Saturn(epoch).aphelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         2047
@@ -356,21 +323,14 @@ class Saturn(Planet):
         return Epoch(sol)
 
     def perihelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Perihelion closer to
         a given epoch.
-
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
 
         :returns: The epoch of the desired Perihelion (or Aphelion)
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
         >>> epoch = Epoch(1944, 1, 1.0)
-        >>> e = Saturn.perihelion_aphelion(epoch)
+        >>> e = Saturn(epoch).perihelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         1944
@@ -380,17 +340,6 @@ class Saturn(Planet):
         8
         >>> print(h)
         1
-        >>> epoch = Epoch(2047, 1, 1.0)
-        >>> e = Saturn.perihelion_aphelion(epoch, perihelion=False)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        2047
-        >>> print(m)
-        7
-        >>> print(d)
-        15
-        >>> print(h)
-        0
         """
 
         # First approximation
@@ -419,7 +368,6 @@ class Saturn(Planet):
 
         :returns: Saturn's magnitude
         :rtype: float
-        :raises: TypeError if input values are of wrong type.
 
         >>> sun_dist = 9.867882
         >>> earth_dist = 10.464606
@@ -434,10 +382,6 @@ class Saturn(Planet):
         # result for the example above is 0.9 (instead of 1.9). However, after
         # carefully checking the formula implemented here, I'm sure that the
         # book has an error
-        if not (isinstance(sun_dist, float) and isinstance(earth_dist, float)
-                and isinstance(delta_u, (float, Angle))
-                and isinstance(b, (float, Angle))):
-            raise TypeError("Invalid input types")
         delta_u = float(delta_u)
         b = Angle(b).rad()
         m = (-8.68 + 5.0 * log10(sun_dist * earth_dist) + 0.044 * abs(delta_u)

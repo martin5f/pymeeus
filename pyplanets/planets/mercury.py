@@ -46,16 +46,12 @@ class Mercury(Planet):
         """This method computes the time of the inferior conjunction closest to
         the given epoch.
 
-        :param epoch: Epoch close to the desired inferior conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the inferior conjunction happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 10, 1.0)
-        >>> conjunction = Mercury.inferior_conjunction(epoch)
+        >>> conjunction = Mercury(epoch).inferior_conjunction()
         >>> y, m, d = conjunction.get_date()
         >>> print(y)
         1993
@@ -64,7 +60,7 @@ class Mercury(Planet):
         >>> print(round(d, 4))
         6.1449
         >>> epoch = Epoch(1631, 10, 1.0)
-        >>> conjunction = Mercury.inferior_conjunction(epoch)
+        >>> conjunction = Mercury(epoch).inferior_conjunction()
         >>> y, m, d = conjunction.get_date()
         >>> print(y)
         1631
@@ -107,16 +103,12 @@ class Mercury(Planet):
         """This method computes the time of the superior conjunction closest to
         the given epoch.
 
-        :param epoch: Epoch close to the desired superior conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the superior conjunction happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 10, 1.0)
-        >>> conjunction = Mercury.superior_conjunction(epoch)
+        >>> conjunction = Mercury(epoch).superior_conjunction()
         >>> y, m, d = conjunction.get_date()
         >>> print(y)
         1993
@@ -155,21 +147,17 @@ class Mercury(Planet):
         to_return = jde0 + corr
         return Epoch(to_return)
 
-    def western_elongation(self) -> Epoch:
+    def western_elongation(self) -> (Epoch, Angle):
         """This method computes the time of the western elongation closest to
         the given epoch, as well as the corresponding maximum elongation angle.
-
-        :param epoch: Epoch close to the desired western elongation
-        :type epoch: :py:class:`Epoch`
 
         :returns: A tuple with the time when the western elongation happens, as
             an Epoch, and the maximum elongation angle, as an Angle
         :rtype: tuple
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 11, 1.0)
-        >>> time, elongation = Mercury.western_elongation(epoch)
+        >>> time, elongation = Mercury(epoch).western_elongation()
         >>> y, m, d = time.get_date()
         >>> print(y)
         1993
@@ -222,21 +210,17 @@ class Mercury(Planet):
         to_return = jde0 + corr
         return Epoch(to_return), elon
 
-    def eastern_elongation(self) -> Epoch:
+    def eastern_elongation(self) -> (Epoch, Angle):
         """This method computes the time of the eastern elongation closest to
         the given epoch, as well as the corresponding maximum elongation angle.
-
-        :param epoch: Epoch close to the desired eastern elongation
-        :type epoch: :py:class:`Epoch`
 
         :returns: A tuple with the time when the eastern elongation happens, as
             an Epoch, and the maximum elongation angle, as an Angle
         :rtype: tuple
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1990, 8, 1.0)
-        >>> time, elongation = Mercury.eastern_elongation(epoch)
+        >>> time, elongation = Mercury(epoch).eastern_elongation()
         >>> y, m, d = time.get_date()
         >>> print(y)
         1990
@@ -294,16 +278,12 @@ class Mercury(Planet):
         (i.e. when the planet is stationary and begins to move westward -
         retrograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired inferior conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 1st statin in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 10, 1.0)
-        >>> sta1 = Mercury.station_longitude_1(epoch)
+        >>> sta1 = Mercury(epoch).station_longitude_1()
         >>> y, m, d = sta1.get_date()
         >>> print(y)
         1993
@@ -347,16 +327,12 @@ class Mercury(Planet):
         (i.e. when the planet is stationary and begins to move eastward -
         prograde - among the starts) closest to the given epoch.
 
-        :param epoch: Epoch close to the desired inferior conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: Time when the 2nd station in longitude happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 10, 1.0)
-        >>> sta2 = Mercury.station_longitude_2(epoch)
+        >>> sta2 = Mercury(epoch).station_longitude_2()
         >>> y, m, d = sta2.get_date()
         >>> print(y)
         1993
@@ -396,32 +372,14 @@ class Mercury(Planet):
         return Epoch(to_return)
 
     def aphelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Aphelion closer to
         a given epoch.
-
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
 
         :returns: The epoch of the desired Perihelion (or Aphelion)
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
-        >>> epoch = Epoch(2000, 1, 1.0)
-        >>> e = Mercury.perihelion_aphelion(epoch)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        2000
-        >>> print(m)
-        2
-        >>> print(d)
-        15
-        >>> print(h)
-        18
         >>> epoch = Epoch(2000, 3, 1.0)
-        >>> e = Mercury.perihelion_aphelion(epoch, perihelion=False)
+        >>> e = Mercury(epoch).aphelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         2000
@@ -442,21 +400,14 @@ class Mercury(Planet):
         return Epoch(sol)
 
     def perihelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Perihelion closer to
         a given epoch.
-
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
 
         :returns: The epoch of the desired Perihelion (or Aphelion)
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
         >>> epoch = Epoch(2000, 1, 1.0)
-        >>> e = Mercury.perihelion_aphelion(epoch)
+        >>> e = Mercury(epoch).perihelion()
         >>> y, m, d, h, mi, s = e.get_full_date()
         >>> print(y)
         2000
@@ -466,17 +417,6 @@ class Mercury(Planet):
         15
         >>> print(h)
         18
-        >>> epoch = Epoch(2000, 3, 1.0)
-        >>> e = Mercury.perihelion_aphelion(epoch, perihelion=False)
-        >>> y, m, d, h, mi, s = e.get_full_date()
-        >>> print(y)
-        2000
-        >>> print(m)
-        3
-        >>> print(d)
-        30
-        >>> print(h)
-        17
         """
 
         # First approximation
@@ -499,12 +439,8 @@ class Mercury(Planet):
 
         :returns: Mercury's magnitude
         :rtype: float
-        :raises: TypeError if input values are of wrong type.
         """
 
-        if not (isinstance(sun_dist, float) and isinstance(earth_dist, float)
-                and isinstance(phase_angle, (float, Angle))):
-            raise TypeError("Invalid input types")
         i = float(phase_angle)
         i50 = i - 50.0
         m = (1.16 + 5.0 * log10(sun_dist * earth_dist) + 0.02838 * i50 +

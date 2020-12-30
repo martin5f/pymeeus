@@ -46,16 +46,12 @@ class Uranus(Planet):
         """This method computes the time of the conjunction closest to the
         given epoch.
 
-        :param epoch: Epoch close to the desired conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the conjunction happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 10, 1.0)
-        >>> conj = Uranus.conjunction(epoch)
+        >>> conj = Uranus(epoch).conjunction()
         >>> y, m, d = conj.get_date()
         >>> print(y)
         1994
@@ -101,16 +97,12 @@ class Uranus(Planet):
         """This method computes the time of the opposition closest to the given
         epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the opposition happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1780, 12, 1.0)
-        >>> oppo = Uranus.opposition(epoch)
+        >>> oppo = Uranus(epoch).opposition()
         >>> y, m, d = oppo.get_date()
         >>> print(y)
         1780
@@ -153,33 +145,17 @@ class Uranus(Planet):
         return Epoch(to_return)
 
     def aphelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Aphelion closer to
         a given epoch.
-
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
 
         :returns: The epoch of the desired Perihelion (or Aphelion)
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
         .. note:: The solution provided by this method may have several days of
             error.
 
-        >>> epoch = Epoch(1880, 1, 1.0)
-        >>> e = Uranus.perihelion_aphelion(epoch)
-        >>> y, m, d = e.get_date()
-        >>> print(y)
-        1882
-        >>> print(m)
-        3
-        >>> print(int(d))
-        18
         >>> epoch = Epoch(2090, 1, 1.0)
-        >>> e = Uranus.perihelion_aphelion(epoch, perihelion=False)
+        >>> e = Uranus(epoch).aphelion()
         >>> y, m, d = e.get_date()
         >>> print(y)
         2092
@@ -199,24 +175,17 @@ class Uranus(Planet):
         return Epoch(sol)
 
     def perihelion(self) -> Epoch:
-        """This method computes the time of Perihelion (or Aphelion) closer to
+        """This method computes the time of Perihelion closer to
         a given epoch.
-
-        :param epoch: Epoch close to the desired Perihelion (or Aphelion)
-        :type epoch: :py:class:`Epoch`
-        :param peihelion: If True, the epoch of the closest Perihelion is
-            computed, if False, the epoch of the closest Aphelion is found.
-        :type bool:
 
         :returns: The epoch of the desired Perihelion (or Aphelion)
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input values are of wrong type.
 
         .. note:: The solution provided by this method may have several days of
             error.
 
         >>> epoch = Epoch(1880, 1, 1.0)
-        >>> e = Uranus.perihelion_aphelion(epoch)
+        >>> e = Uranus(epoch).perihelion()
         >>> y, m, d = e.get_date()
         >>> print(y)
         1882
@@ -224,15 +193,6 @@ class Uranus(Planet):
         3
         >>> print(int(d))
         18
-        >>> epoch = Epoch(2090, 1, 1.0)
-        >>> e = Uranus.perihelion_aphelion(epoch, perihelion=False)
-        >>> y, m, d = e.get_date()
-        >>> print(y)
-        2092
-        >>> print(m)
-        11
-        >>> print(int(d))
-        22
         """
 
         # First approximation
@@ -255,10 +215,7 @@ class Uranus(Planet):
 
         :returns: Uranus's magnitude
         :rtype: float
-        :raises: TypeError if input values are of wrong type.
         """
 
-        if not (isinstance(sun_dist, float) and isinstance(earth_dist, float)):
-            raise TypeError("Invalid input types")
         m = -6.85 + 5.0 * log10(sun_dist * earth_dist)
         return round(m, 1)

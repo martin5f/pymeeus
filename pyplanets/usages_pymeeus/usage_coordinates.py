@@ -37,16 +37,16 @@ def main():
 
     # Here follows a series of important parameters related to the angle
     # between Earth's rotation axis and the ecliptic
-    e0 = pyplanets.calculation.coordinates.mean_obliquity(1987, 4, 10)
+    e0 = pyplanets.core.coordinates.mean_obliquity(1987, 4, 10)
     print(
         "The mean angle between Earth rotation axis and ecliptic axis for "
         + "1987/4/10 is:"
     )
     print_me("Mean obliquity", e0.dms_str(n_dec=3))  # 23d 26' 27.407''
-    epsilon = pyplanets.calculation.coordinates.true_obliquity(1987, 4, 10)
+    epsilon = pyplanets.core.coordinates.true_obliquity(1987, 4, 10)
     print("'True' (instantaneous) angle between those axes for 1987/4/10 is:")
     print_me("True obliquity", epsilon.dms_str(n_dec=3))  # 23d 26' 36.849''
-    epsilon = pyplanets.calculation.coordinates.true_obliquity(2018, 7, 29)
+    epsilon = pyplanets.core.coordinates.true_obliquity(2018, 7, 29)
     print("'True' (instantaneous) angle between those axes for 2018/7/29 is:")
     print_me("True obliquity", epsilon.dms_str(True, 4))  # 23d 26' 7.2157''
 
@@ -54,10 +54,10 @@ def main():
     # ecliptic (nutation in longitude) and other perpendicular to the ecliptic
     # (nutation in obliquity)
     print("Nutation correction in longitude for 1987/4/10:")
-    dpsi = pyplanets.calculation.coordinates.nutation_longitude(1987, 4, 10)
+    dpsi = pyplanets.core.coordinates.nutation_longitude(1987, 4, 10)
     print_me("Nutation in longitude", dpsi.dms_str(n_dec=3))  # 0d 0' -3.788''
     print("Nutation correction in obliquity for 1987/4/10:")
-    depsilon = pyplanets.calculation.coordinates.nutation_obliquity(1987, 4, 10)  # 0d 0' 9.443''
+    depsilon = pyplanets.core.coordinates.nutation_obliquity(1987, 4, 10)  # 0d 0' 9.443''
     print_me("Nutation in obliquity", depsilon.dms_str(n_dec=3))
 
     print("")
@@ -73,7 +73,7 @@ def main():
     print_me("Initial declination", delta0.dms_str(n_dec=2))  # 49d 13' 42.48''
     pm_ra = Angle(0, 0, 0.03425, ra=True)
     pm_dec = Angle(0, 0, -0.0895)
-    alpha, delta = pyplanets.calculation.coordinates.precession_equatorial(
+    alpha, delta = pyplanets.core.coordinates.precession_equatorial(
         start_epoch, final_epoch, alpha0, delta0, pm_ra, pm_dec
     )
     print_me("Final right ascension", alpha.ra_str(n_dec=3))  # 2h 46' 11.331''
@@ -88,7 +88,7 @@ def main():
     lat0 = Angle(1.76549)
     print_me("Initial ecliptical longitude", round(lon0(), 5))  # 149.48194
     print_me("Initial ecliptical latitude", round(lat0(), 5))  # 1.76549
-    lon, lat = pyplanets.calculation.coordinates.precession_ecliptical(start_epoch, final_epoch, lon0, lat0)
+    lon, lat = pyplanets.core.coordinates.precession_ecliptical(start_epoch, final_epoch, lon0, lat0)
     print_me("Final ecliptical longitude", round(lon(), 3))  # 118.704
     print_me("Final ecliptical latitude", round(lat(), 3))  # 1.615
 
@@ -102,7 +102,7 @@ def main():
     pm_dec = Angle(0, 0, -1.2053)
     dist = 2.64
     vel = -7.6
-    alpha, delta = pyplanets.calculation.coordinates.motion_in_space(ra, dec, dist, vel, pm_ra, pm_dec, -1000.0)
+    alpha, delta = pyplanets.core.coordinates.motion_in_space(ra, dec, dist, vel, pm_ra, pm_dec, -1000.0)
 
     print_me("Right ascension, year 2000", ra.ra_str(True, 2))
     print_me("Right ascension, year 1000", alpha.ra_str(True, 2))
@@ -119,7 +119,7 @@ def main():
     ra = Angle(7, 45, 18.946, ra=True)
     dec = Angle(28, 1, 34.26)
     epsilon = Angle(23.4392911)
-    lon, lat = pyplanets.calculation.coordinates.equatorial2ecliptical(ra, dec, epsilon)
+    lon, lat = pyplanets.core.coordinates.equatorial2ecliptical(ra, dec, epsilon)
     print_me("Equatorial to ecliptical. Longitude", round(lon(), 5))
     # 113.21563
     print_me("Equatorial to ecliptical. Latitude", round(lat(), 5))
@@ -130,7 +130,7 @@ def main():
     lon = Angle(113.21563)
     lat = Angle(6.68417)
     epsilon = Angle(23.4392911)
-    ra, dec = pyplanets.calculation.coordinates.ecliptical2equatorial(lon, lat, epsilon)
+    ra, dec = pyplanets.core.coordinates.ecliptical2equatorial(lon, lat, epsilon)
     print_me("Ecliptical to equatorial. Right ascension", ra.ra_str(n_dec=3))
     # 7h 45' 18.946''
     print_me("Ecliptical to equatorial. Declination", dec.dms_str(n_dec=2))
@@ -148,7 +148,7 @@ def main():
     delta = Angle(0, 0, ((-3.868 * cos(eps.rad())) / 15.0), ra=True)
     theta0 += delta
     h = theta0 - lon - ra
-    azi, ele = pyplanets.calculation.coordinates.equatorial2horizontal(h, dec, lat)
+    azi, ele = pyplanets.core.coordinates.equatorial2horizontal(h, dec, lat)
     print_me("Equatorial to horizontal: Azimuth", round(azi, 3))  # 68.034
     print_me("Equatorial to horizontal: Elevation", round(ele, 3))  # 15.125
 
@@ -157,7 +157,7 @@ def main():
     azi = Angle(68.0337)
     ele = Angle(15.1249)
     lat = Angle(38, 55, 17)
-    h, dec = pyplanets.calculation.coordinates.horizontal2equatorial(azi, ele, lat)
+    h, dec = pyplanets.core.coordinates.horizontal2equatorial(azi, ele, lat)
     print_me("Horizontal to equatorial. Hour angle", round(h, 4))  # 64.3521
     print_me("Horizontal to equatorial. Declination", dec.dms_str(n_dec=0))
     # -6d 43' 12.0''
@@ -166,7 +166,7 @@ def main():
 
     ra = Angle(17, 48, 59.74, ra=True)
     dec = Angle(-14, 43, 8.2)
-    lon, lat = pyplanets.calculation.coordinates.equatorial2galactic(ra, dec)
+    lon, lat = pyplanets.core.coordinates.equatorial2galactic(ra, dec)
     print_me("Equatorial to galactic. Longitude", round(lon, 4))  # 12.9593
     print_me("Equatorial to galactic. Latitude", round(lat, 4))  # 6.0463
 
@@ -174,7 +174,7 @@ def main():
 
     lon = Angle(12.9593)
     lat = Angle(6.0463)
-    ra, dec = pyplanets.calculation.coordinates.galactic2equatorial(lon, lat)
+    ra, dec = pyplanets.core.coordinates.galactic2equatorial(lon, lat)
     print_me("Galactic to equatorial. Right ascension", ra.ra_str(n_dec=1))
     # 17h 48' 59.7''
     print_me("Galactic to equatorial. Declination", dec.dms_str(n_dec=0))
@@ -187,7 +187,7 @@ def main():
     sidereal_time = Angle(5.0, ra=True)
     lat = Angle(51.0)
     epsilon = Angle(23.44)
-    lon1, lon2, i = pyplanets.calculation.coordinates.ecliptic_horizon(sidereal_time, lat, epsilon)
+    lon1, lon2, i = pyplanets.core.coordinates.ecliptic_horizon(sidereal_time, lat, epsilon)
     print_me(
         "Longitude of ecliptic point #1 on the horizon", lon1.dms_str(n_dec=1)
     )  # 169d 21' 29.9''
@@ -202,7 +202,7 @@ def main():
     # to the horizon at the time of rising and setting
     dec = Angle(23.44)
     lat = Angle(40.0)
-    j = pyplanets.calculation.coordinates.diurnal_path_horizon(dec, lat)
+    j = pyplanets.core.coordinates.diurnal_path_horizon(dec, lat)
     print_me(
         "Diurnal path vs. horizon angle at time of rising and setting",
         j.dms_str(n_dec=1),
@@ -223,7 +223,7 @@ def main():
     h0 = Angle(-0.5667)
     delta_t = 56.0
     theta0 = Angle(11, 50, 58.1, ra=True)
-    rising, transit, setting = pyplanets.calculation.coordinates.times_rise_transit_set(
+    rising, transit, setting = pyplanets.core.coordinates.times_rise_transit_set(
         longitude,
         latitude,
         alpha1,
@@ -248,14 +248,14 @@ def main():
     # refraction. We can compute the true (airless) elevation from the apparent
     # elevation, and viceversa
     apparent_elevation = Angle(0, 30, 0.0)
-    true_elevation = pyplanets.calculation.coordinates.refraction_apparent2true(apparent_elevation)
+    true_elevation = pyplanets.core.coordinates.refraction_apparent2true(apparent_elevation)
     print_me(
         "True elevation for an apparent elevation of 30'",
         true_elevation.dms_str(n_dec=1),
     )  # 1' 14.7''
 
     true_elevation = Angle(0, 33, 14.76)
-    apparent_elevation = pyplanets.calculation.coordinates.refraction_true2apparent(true_elevation)
+    apparent_elevation = pyplanets.core.coordinates.refraction_true2apparent(true_elevation)
     print_me(
         "Apparent elevation for a true elevation of 33' 14.76''",
         apparent_elevation.dms_str(n_dec=2),
@@ -270,7 +270,7 @@ def main():
     delta1 = Angle(19, 10, 57.0)
     alpha2 = Angle(13, 25, 11.6, ra=True)
     delta2 = Angle(-11, 9, 41.0)
-    sep_ang = pyplanets.calculation.coordinates.angular_separation(alpha1, delta1, alpha2, delta2)
+    sep_ang = pyplanets.core.coordinates.angular_separation(alpha1, delta1, alpha2, delta2)
     print_me(
         "Angular separation between two given celestial bodies (degrees)",
         round(sep_ang, 3),
@@ -297,7 +297,7 @@ def main():
     delta1_3 = Angle(9, 55, 16.7)
     alpha2_3 = Angle(10, 34, 26.22, ra=True)
     delta2_3 = Angle(10, 34, 53.9)
-    a = pyplanets.calculation.coordinates.minimum_angular_separation(
+    a = pyplanets.core.coordinates.minimum_angular_separation(
         alpha1_1,
         delta1_1,
         alpha1_2,
@@ -329,7 +329,7 @@ def main():
     delta1 = Angle(19, 10, 57.0)
     alpha2 = Angle(14, 15, 39.7, ra=True)  # Same as alpha1
     delta2 = Angle(-11, 9, 41.0)
-    pos_ang = pyplanets.calculation.coordinates.relative_position_angle(alpha1, delta1, alpha2, delta2)
+    pos_ang = pyplanets.core.coordinates.relative_position_angle(alpha1, delta1, alpha2, delta2)
     print_me("Relative position angle", round(pos_ang, 1))  # 0.0
 
     print("")
@@ -359,8 +359,8 @@ def main():
     delta1_list = [delta1_1, delta1_2, delta1_3, delta1_4, delta1_5]
     alpha2_list = [alpha2_1, alpha2_2, alpha2_3, alpha2_4, alpha2_5]
     delta2_list = [delta2_1, delta2_2, delta2_3, delta2_4, delta2_5]
-    pc = pyplanets.calculation.coordinates.planetary_conjunction(alpha1_list, delta1_list, alpha2_list,
-                                                                 delta2_list)
+    pc = pyplanets.core.coordinates.planetary_conjunction(alpha1_list, delta1_list, alpha2_list,
+                                                          delta2_list)
     print_me("Epoch fraction 'n' for planetary conjunction", round(pc[0], 5))
     # 0.23797
     print_me(
@@ -384,8 +384,8 @@ def main():
     delta_star = Angle(-9, 22, 58.47)
     alpha_list = [alpha_1, alpha_2, alpha_3, alpha_4, alpha_5]
     delta_list = [delta_1, delta_2, delta_3, delta_4, delta_5]
-    pc = pyplanets.calculation.coordinates.planet_star_conjunction(alpha_list, delta_list, alpha_star,
-                                                                   delta_star)
+    pc = pyplanets.core.coordinates.planet_star_conjunction(alpha_list, delta_list, alpha_star,
+                                                            delta_star)
     print_me("Epoch fraction 'n' for planetary conjunction with star",
              round(pc[0], 4))  # 0.2551
     print_me("Difference in declination with star at conjunction",
@@ -411,8 +411,8 @@ def main():
     delta_star2 = Angle(28, 2, 12.5)
     alpha_list = [alpha_1, alpha_2, alpha_3, alpha_4, alpha_5]
     delta_list = [delta_1, delta_2, delta_3, delta_4, delta_5]
-    n = pyplanets.calculation.coordinates.planet_stars_in_line(alpha_list, delta_list, alpha_star1, delta_star1,
-                                                               alpha_star2, delta_star2)
+    n = pyplanets.core.coordinates.planet_stars_in_line(alpha_list, delta_list, alpha_star1, delta_star1,
+                                                        alpha_star2, delta_star2)
     print_me("Epoch fraction 'n' when bodies are in a straight line",
              round(n, 4))  # 0.2233
 
@@ -426,7 +426,7 @@ def main():
     delta2 = Angle(-1, 12, 7.0)
     alpha3 = Angle(5, 40, 45.52, ra=True)
     delta3 = Angle(-1, 56, 33.3)
-    psi, omega = pyplanets.calculation.coordinates.straight_line(alpha1, delta1, alpha2, delta2, alpha3, delta3)
+    psi, omega = pyplanets.core.coordinates.straight_line(alpha1, delta1, alpha2, delta2, alpha3, delta3)
     print_me("Angle deviation from a straight line", psi.dms_str(n_dec=0))
     # 7d 31' 1.0''
     print_me("Angular distance of central point to the straight line",
@@ -441,7 +441,7 @@ def main():
     delta2 = Angle(-4, 22, 26.2)
     alpha3 = Angle(12, 39, 28.11, ra=True)
     delta3 = Angle(-1, 50, 3.7)
-    d = pyplanets.calculation.coordinates.circle_diameter(alpha1, delta1, alpha2, delta2, alpha3, delta3)
+    d = pyplanets.core.coordinates.circle_diameter(alpha1, delta1, alpha2, delta2, alpha3, delta3)
     print_me(
         "Diameter of smallest circle containing three celestial bodies",
         d.dms_str(n_dec=0),
@@ -455,7 +455,7 @@ def main():
     alpha = Angle(2, 46, 11.331, ra=True)
     delta = Angle(49, 20, 54.54)
     sun_lon = Angle(231.328)
-    app_alpha, app_delta = pyplanets.calculation.coordinates.apparent_position(epoch, alpha, delta, sun_lon)
+    app_alpha, app_delta = pyplanets.core.coordinates.apparent_position(epoch, alpha, delta, sun_lon)
     print_me("Apparent right ascension", app_alpha.ra_str(n_dec=2))
     # 2h 46' 14.39''
     print_me("Apparent declination", app_delta.dms_str(n_dec=2))
@@ -469,7 +469,7 @@ def main():
     i0 = Angle(47.122)
     arg0 = Angle(151.4486)
     lon0 = Angle(45.7481)
-    i1, arg1, lon1 = pyplanets.calculation.coordinates.orbital_equinox2equinox(epoch0, epoch, i0, arg0, lon0)
+    i1, arg1, lon1 = pyplanets.core.coordinates.orbital_equinox2equinox(epoch0, epoch, i0, arg0, lon0)
     print_me("New inclination", round(i1(), 3))  # 47.138
     print_me("New argument of perihelion", round(arg1(), 4))  # 151.4782
     print_me("New longitude of ascending node", round(lon1(), 4))  # 48.6037
@@ -479,10 +479,10 @@ def main():
     # Compute the eccentric and true anomalies using Kepler's equation
     eccentricity = 0.1
     mean_anomaly = Angle(5.0)
-    e, v = pyplanets.calculation.coordinates.kepler_equation(eccentricity, mean_anomaly)
+    e, v = pyplanets.core.coordinates.kepler_equation(eccentricity, mean_anomaly)
     print_me("Eccentric anomaly, Case #1", round(e(), 6))  # 5.554589
     print_me("True anomaly, Case #1", round(v(), 6))  # 6.139762
-    e, v = pyplanets.calculation.coordinates.kepler_equation(0.99, Angle(0.2, radians=True))
+    e, v = pyplanets.core.coordinates.kepler_equation(0.99, Angle(0.2, radians=True))
     print_me("Eccentric anomaly, Case #2", round(e(), 8))  # 61.13444578
     print_me("True anomaly, Case #2", round(v(), 6))  # 166.311977
 
@@ -492,20 +492,20 @@ def main():
     # elliptic) orbit
     r = 1.0
     a = 17.9400782
-    v = pyplanets.calculation.coordinates.velocity(r, a)
+    v = pyplanets.core.coordinates.velocity(r, a)
     print_me("Velocity at 1 AU", round(v, 2))  # 41.53
 
     # Compute the velocity at perihelion
     e = 0.96727426
-    vp = pyplanets.calculation.coordinates.velocity_perihelion(e, a)
+    vp = pyplanets.core.coordinates.velocity_perihelion(e, a)
     print_me("Velocity at perihelion", round(vp, 2))  # 54.52
 
     # Compute the velocity at aphelion
-    va = pyplanets.calculation.coordinates.velocity_aphelion(e, a)
+    va = pyplanets.core.coordinates.velocity_aphelion(e, a)
     print_me("Velocity at aphelion", round(va, 2))  # 0.91
 
     # Calculate the length of the orbit
-    length = pyplanets.calculation.coordinates.length_orbit(e, a)
+    length = pyplanets.core.coordinates.length_orbit(e, a)
     print_me("Length of the orbit (AU)", round(length, 2))  # 77.06
 
     print("")
@@ -515,7 +515,7 @@ def main():
     e = 0.96727426
     a = 17.9400782
     t = Epoch(1986, 2, 9.45891)
-    time, r = pyplanets.calculation.coordinates.passage_nodes_elliptic(omega, e, a, t)
+    time, r = pyplanets.core.coordinates.passage_nodes_elliptic(omega, e, a, t)
     y, m, d = time.get_date()
     d = round(d, 2)
     print("Time of passage through ascending node: {}/{}/{}".format(y, m, d))
@@ -526,7 +526,7 @@ def main():
     omega = Angle(154.9103)
     q = 1.324502
     t = Epoch(1989, 8, 20.291)
-    time, r = pyplanets.calculation.coordinates.passage_nodes_parabolic(omega, q, t, ascending=False)
+    time, r = pyplanets.core.coordinates.passage_nodes_parabolic(omega, q, t, ascending=False)
     y, m, d = time.get_date()
     d = round(d, 2)
     print("Time of passage through descending node: {}/{}/{}".format(y, m, d))
@@ -539,10 +539,10 @@ def main():
     sun_dist = 0.724604
     earth_dist = 0.910947
     sun_earth_dist = 0.983824
-    angle = pyplanets.calculation.coordinates.phase_angle(sun_dist, earth_dist, sun_earth_dist)
+    angle = pyplanets.core.coordinates.phase_angle(sun_dist, earth_dist, sun_earth_dist)
     print_me("Phase angle", round(angle, 2))  # 72.96
     # Now, let's compute the illuminated fraction of the disk
-    k = pyplanets.calculation.coordinates.illuminated_fraction(sun_dist, earth_dist, sun_earth_dist)
+    k = pyplanets.core.coordinates.illuminated_fraction(sun_dist, earth_dist, sun_earth_dist)
     print_me("Illuminated fraction of planet disk", round(k, 3))  # 0.647
 
 

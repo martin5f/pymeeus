@@ -46,16 +46,12 @@ class Neptune(Planet):
         """This method computes the time of the conjunction closest to the
         given epoch.
 
-        :param epoch: Epoch close to the desired conjunction
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the conjunction happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1993, 10, 1.0)
-        >>> conj = Neptune.conjunction(epoch)
+        >>> conj = Neptune(epoch).conjunction()
         >>> y, m, d = conj.get_date()
         >>> print(y)
         1994
@@ -100,16 +96,12 @@ class Neptune(Planet):
         """This method computes the time of the opposition closest to the given
         epoch.
 
-        :param epoch: Epoch close to the desired opposition
-        :type epoch: :py:class:`Epoch`
-
         :returns: The time when the opposition happens, as an Epoch
         :rtype: :py:class:`Epoch`
-        :raises: TypeError if input value is of wrong type.
         :raises: ValueError if input epoch outside the -2000/4000 range.
 
         >>> epoch = Epoch(1846, 8, 1)
-        >>> oppo = Neptune.opposition(epoch)
+        >>> oppo = Neptune(epoch).opposition()
         >>> y, m, d = oppo.get_date()
         >>> print(y)
         1846
@@ -168,8 +160,7 @@ class Neptune(Planet):
         """
         raise NotImplementedError
 
-    @staticmethod
-    def magnitude(sun_dist, earth_dist):
+    def magnitude(self, sun_dist, earth_dist):
         """This function computes the approximate magnitude of Neptune.
 
         :param sun_dist: Distance from Neptune to Sun, in Astronomical Units
@@ -179,10 +170,7 @@ class Neptune(Planet):
 
         :returns: Neptune's magnitude
         :rtype: float
-        :raises: TypeError if input values are of wrong type.
         """
 
-        if not (isinstance(sun_dist, float) and isinstance(earth_dist, float)):
-            raise TypeError("Invalid input types")
         m = -7.05 + 5.0 * log10(sun_dist * earth_dist)
         return round(m, 1)
