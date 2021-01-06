@@ -18,17 +18,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 
-from pyplanets.usages_pymeeus import usage_earth, usage_base, usage_angle, usage_coordinates, usage_curvefitting, \
-    usage_epoch, usage_interpolation, usage_sun
-from pyplanets.usages_pymeeus import usage_jupiter
-from pyplanets.usages_pymeeus import usage_mars
-from pyplanets.usages_pymeeus import usage_mercury
-from pyplanets.usages_pymeeus import usage_minor
-from pyplanets.usages_pymeeus import usage_neptune
-from pyplanets.usages_pymeeus import usage_pluto
-from pyplanets.usages_pymeeus import usage_saturn
-from pyplanets.usages_pymeeus import usage_uranus
-from pyplanets.usages_pymeeus import usage_venus
+from examples.pymeeus import usage_venus, usage_angle, usage_neptune, usage_minor, usage_mars, usage_pluto, \
+    usage_uranus, usage_saturn, usage_epoch, usage_base, usage_earth, usage_interpolation, usage_curvefitting, \
+    usage_coordinates, usage_sun, usage_jupiter, usage_mercury
 
 
 def main():
