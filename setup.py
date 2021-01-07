@@ -13,7 +13,7 @@ with open(path.join(here, 'README.rst')) as f:
 
 config = {
     'name': 'pyplanets',
-    'version': '0.4.1',
+    'version': '0.4.2',
     'description': 'PyPlanets: Object-oriented refactoring of PyMeeus, a Python library '
                    'implementing astronomical algorithms.',
     'long_description': long_description,
