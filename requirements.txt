@@ -16,3 +16,6 @@ pytest==4.0.1
 pytest-cov==2.6.0
 scandir==1.9.0
 six==1.11.0
+
+PyMeeus~=0.3.7
+setuptools~=51.0.0

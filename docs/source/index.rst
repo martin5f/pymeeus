@@ -1,6 +1,6 @@
 .. PyPlanets documentation master file.
 
-.. include:: ../generated/README.md.rst
+.. include:: ../../README.rst
 
 API
 =======
