@@ -30,7 +30,7 @@ if not exist %GENERATEDDIR%\ (
     mkdir .\generated
 )
 REM Run external tools to generate documentation artefacts.
-pandoc -s ..\README.md -o .\%GENERATEDDIR%\README.md.rst
+REM pandoc -s ..\README.md -o .\%GENERATEDDIR%\README.md.rst
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end
 
